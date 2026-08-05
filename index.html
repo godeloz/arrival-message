@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>El mensaje circular</title>
+<meta name="description" content="Una dinámica sobre el orden de los mensajes. Liderazgo en escena.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fog-0:#E2E5DF;
+  --fog-1:#C9CEC7;
+  --fog-2:#A6ACA4;
+  --fog-3:#8E948C;
+  --ink:#0C0E0D;
+  --ink-80:rgba(12,14,13,.80);
+  --ink-55:rgba(12,14,13,.55);
+  --ink-35:rgba(12,14,13,.35);
+  --ink-15:rgba(12,14,13,.15);
+  --ink-08:rgba(12,14,13,.08);
+  --signal:#0E8F86;
+  --paper:#EFF1EC;
+  --step:clamp(14px,3.6vw,17px);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;
+  color:var(--ink);
+  background:var(--fog-1);
+  min-height:100vh;
+  min-height:100dvh;
+  overflow-x:hidden;
+  line-height:1.55;
+}
+
+/* ── Niebla ambiente ─────────────────────────── */
+.fog{position:fixed;inset:0;z-index:0;pointer-events:none}
+.fog::before,.fog::after{content:'';position:absolute;inset:-25%;border-radius:50%}
+.fog::before{
+  background:radial-gradient(circle at 50% 42%, var(--fog-0) 0%, transparent 58%);
+  animation:drift 34s ease-in-out infinite alternate;
+}
+.fog::after{
+  background:radial-gradient(circle at 28% 78%, var(--fog-2) 0%, transparent 52%);
+  animation:drift 46s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift{
+  from{transform:translate3d(-4%,-3%,0) scale(1)}
+  to{transform:translate3d(5%,4%,0) scale(1.12)}
+}
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.30;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* ── Estructura ──────────────────────────────── */
+.stage{position:relative;z-index:2;max-width:660px;margin:0 auto;padding:0 22px calc(48px + env(safe-area-inset-bottom))}
+
+.screen{display:none;padding-top:min(11vh,72px);animation:rise .7s cubic-bezier(.2,.7,.3,1) both}
+.screen.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ── Tipografía ──────────────────────────────── */
+.eyebrow{
+  font-size:10px;font-weight:400;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--ink-35);margin-bottom:26px;
+}
+h1{
+  font-weight:200;font-size:clamp(34px,10vw,54px);line-height:1.02;
+  letter-spacing:-.015em;margin-bottom:20px;
+}
+h2{
+  font-weight:200;font-size:clamp(25px,6.6vw,36px);line-height:1.1;
+  letter-spacing:-.01em;margin-bottom:18px;
+}
+.lede{font-size:var(--step);color:var(--ink-80);max-width:44ch;margin-bottom:14px}
+.lede em{font-style:normal;color:var(--ink)}
+
+.step-tag{
+  display:inline-block;font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--signal);border-bottom:1px solid rgba(14,143,134,.3);
+  padding-bottom:5px;margin-bottom:22px;font-weight:400;
+}
+.hint{
+  font-size:13.5px;color:var(--ink-55);max-width:40ch;margin-top:14px;
+}
+.rule{height:1px;background:var(--ink-15);margin:34px 0;border:0}
+
+/* ── Controles ───────────────────────────────── */
+.field{margin:34px 0 30px}
+.field label{
+  display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ink-35);margin-bottom:11px;
+}
+.field input{
+  width:100%;font-family:inherit;font-size:19px;font-weight:300;color:var(--ink);
+  background:transparent;border:0;border-bottom:1px solid var(--ink-35);
+  padding:9px 2px;outline:none;transition:border-color .3s;
+}
+.field input:focus{border-color:var(--signal)}
+.field input::placeholder{color:var(--ink-35)}
+
+.btn{
+  display:inline-flex;align-items:center;gap:13px;
+  font-family:inherit;font-size:12px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink);background:transparent;
+  border:1px solid var(--ink-35);border-radius:999px;
+  padding:16px 30px;cursor:pointer;
+  transition:border-color .35s,background .35s,color .35s;
+  min-height:52px;
+}
+.btn:hover,.btn:focus-visible{border-color:var(--ink);background:rgba(12,14,13,.05)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn .arw{font-size:15px;line-height:1;transform:translateY(-1px)}
+.btn--ghost{border-color:var(--ink-15);color:var(--ink-55);font-size:11px;padding:14px 24px;min-height:46px}
+.btn--ghost:hover{color:var(--ink);border-color:var(--ink-35)}
+.btn-row{display:flex;flex-wrap:wrap;gap:13px;margin-top:32px;align-items:center}
+
+:focus-visible{outline:2px solid var(--signal);outline-offset:4px}
+
+/* ── El anillo ───────────────────────────────── */
+.ring-wrap{
+  position:relative;width:min(86vw,392px);aspect-ratio:1;margin:34px auto 0;
+}
+.ring-line{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ring-center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:44%;text-align:center;pointer-events:none;
+}
+.ring-center p{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-35);line-height:1.7;
+}
+
+.mark{
+  position:absolute;width:clamp(54px,16.5vw,72px);aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  background:none;border:0;padding:0;cursor:pointer;
+  opacity:.72;transition:opacity .4s,transform .4s;
+}
+.mark svg{width:100%;height:100%;display:block;overflow:visible}
+.mark .lg{stroke:var(--ink);fill:none;stroke-linecap:round;transition:stroke .4s}
+.mark .lgf{fill:var(--ink);stroke:none;transition:fill .4s}
+.mark:hover,.mark:focus-visible{opacity:1}
+.mark.read{opacity:.95}
+.mark.active{opacity:1;transform:translate(-50%,-50%) scale(1.16)}
+.mark.active .lg{stroke:var(--signal)}
+.mark.active .lgf{fill:var(--signal)}
+.mark.dim{opacity:.16;pointer-events:none}
+.mark .halo{
+  position:absolute;inset:-16%;border-radius:50%;
+  background:radial-gradient(circle,rgba(14,143,134,.22) 0%,transparent 68%);
+  opacity:0;transition:opacity .45s;
+}
+.mark.active .halo{opacity:1}
+.mark .tick{
+  position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);
+  font-size:9px;letter-spacing:.16em;color:var(--ink-35);
+}
+
+/* ── Lector de fragmento ─────────────────────── */
+.reader{
+  margin-top:26px;min-height:150px;
+  border-top:1px solid var(--ink-15);padding-top:22px;
+}
+.reader .empty{font-size:13.5px;color:var(--ink-35);max-width:34ch}
+.reader .frag{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;
+  font-size:clamp(19px,5.2vw,24px);line-height:1.42;color:var(--ink);
+  animation:fadein .5s ease both;
+}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.reader .frag-n{
+  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.3em;
+  color:var(--signal);text-transform:uppercase;display:block;margin-bottom:12px;
+}
+.progress{
+  font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ink-35);margin-top:20px;
+}
+
+/* ── Dirección ───────────────────────────────── */
+.dirs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+.dir{
+  background:transparent;border:1px solid var(--ink-15);border-radius:14px;
+  padding:22px 12px 18px;cursor:pointer;font-family:inherit;color:var(--ink);
+  transition:border-color .35s,background .35s;
+}
+.dir:hover,.dir:focus-visible{border-color:var(--signal);background:rgba(14,143,134,.05)}
+.dir svg{width:78px;height:78px;display:block;margin:0 auto 14px}
+.dir span{
+  display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);
+}
+
+/* ── Comunicado ──────────────────────────────── */
+.doc{
+  background:var(--paper);border:1px solid var(--ink-15);
+  padding:clamp(22px,6vw,38px);margin-top:26px;
+  box-shadow:0 18px 46px -34px rgba(12,14,13,.6);
+}
+.doc-head{
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-35);
+  padding-bottom:14px;border-bottom:1px solid var(--ink-15);margin-bottom:22px;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.doc-title{
+  font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(17px,4.4vw,21px);
+  line-height:1.3;margin-bottom:20px;letter-spacing:-.005em;
+}
+.doc p{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;
+  font-size:clamp(16px,4.1vw,18.5px);line-height:1.62;color:var(--ink-80);
+  margin-bottom:15px;
+}
+.doc p:last-child{margin-bottom:0}
+
+.notes{margin-top:22px;padding-left:17px;border-left:1px solid var(--ink-15)}
+.notes p{font-size:13.5px;color:var(--ink-55);margin-bottom:11px;max-width:46ch}
+.notes p:last-child{margin-bottom:0}
+
+/* ── Comparación ─────────────────────────────── */
+.compare{display:grid;gap:24px;margin-top:24px}
+@media(min-width:760px){.compare{grid-template-columns:1fr 1fr;gap:20px}}
+.col-tag{
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ink-35);margin-bottom:10px;
+}
+.col-tag.mine{color:var(--signal)}
+.compare .doc{margin-top:0}
+.compare .doc p{font-size:15px;line-height:1.58}
+.compare .doc-title{font-size:16px}
+#colOther{animation:swap .55s ease both}
+@keyframes swap{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.cycle{
+  font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-35);
+}
+
+.verdict{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;font-style:italic;
+  font-size:clamp(21px,5.6vw,28px);line-height:1.35;
+  margin:44px 0 0;padding-top:34px;border-top:1px solid var(--ink-35);
+}
+
+/* ── Cierre ──────────────────────────────────── */
+.closing{
+  min-height:66vh;display:flex;flex-direction:column;justify-content:center;
+}
+.closing .q{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;
+  font-size:clamp(25px,7vw,40px);line-height:1.24;max-width:19ch;
+}
+.closing .sig{
+  margin-top:52px;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-35);
+}
+
+.team-badge{
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-35);
+  margin-bottom:16px;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="fog"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wobble">
+    <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="11" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<main class="stage">
+
+  <!-- 0 ─ Entrada -->
+  <section class="screen on" id="s0">
+    <p class="eyebrow">Liderazgo en escena</p>
+    <h1>El mensaje<br>circular</h1>
+    <p class="lede">Una transmisión llegó incompleta. Su equipo tiene que ponerla en orden y hacerla llegar.</p>
+    <div class="field">
+      <label for="team">Nombre del equipo</label>
+      <input id="team" type="text" placeholder="Escriban aquí" autocomplete="off" maxlength="28">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="go0">Recibir el mensaje <span class="arw">→</span></button>
+    </div>
+  </section>
+
+  <!-- 1 ─ El encargo -->
+  <section class="screen" id="s1">
+    <p class="eyebrow">Transmisión recibida</p>
+    <h2>Ocho fragmentos.<br>Ninguno perdido.</h2>
+    <p class="lede">Llegó un comunicado que la Dirección General necesita transmitir a toda la organización.</p>
+    <p class="lede">Durante la transmisión algo falló: el mensaje llegó sin orden. Están los ocho fragmentos completos, sin repeticiones.</p>
+    <p class="lede"><em>Su tarea es reconstruirlo y transmitirlo.</em></p>
+    <hr class="rule">
+    <p class="hint">Van a tomar dos decisiones. Nada más.<br>Primero, por dónde empieza el mensaje. Después, hacia qué lado se lee.</p>
+    <div class="btn-row">
+      <button class="btn" id="go1">Ver los fragmentos <span class="arw">→</span></button>
+    </div>
+  </section>
+
+  <!-- 2 ─ El anillo -->
+  <section class="screen" id="s2">
+    <p class="step-tag">Paso 1 de 2</p>
+    <h2>Elijan por dónde<br>empieza el mensaje</h2>
+    <p class="lede">Toquen cada marca para leer su fragmento. Cuando tengan claro cuál va primero, confírmenlo abajo.</p>
+
+    <div class="ring-wrap" id="ring">
+      <svg class="ring-line" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(12,14,13,.14)" stroke-width=".35"/>
+      </svg>
+      <div class="ring-center"><p id="ringMsg">Toquen<br>una marca</p></div>
+    </div>
+
+    <div class="reader" id="reader" aria-live="polite">
+      <p class="empty">Ningún fragmento abierto todavía.</p>
+    </div>
+    <p class="progress" id="prog">0 de 8 fragmentos leídos</p>
+
+    <div class="btn-row">
+      <button class="btn" id="go2" disabled>Empezar por este fragmento <span class="arw">→</span></button>
+    </div>
+  </section>
+
+  <!-- 3 ─ Dirección -->
+  <section class="screen" id="s3">
+    <p class="step-tag">Paso 2 de 2</p>
+    <h2>Elijan hacia qué<br>lado se lee</h2>
+    <p class="lede">El mensaje empieza en la marca que escogieron. Desde ahí, el anillo se puede recorrer en dos sentidos.</p>
+    <p class="hint" id="entryEcho"></p>
+    <div class="dirs">
+      <button class="dir" id="dirF">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(12,14,13,.2)" stroke-width="1.6"/>
+          <path d="M50 16 A34 34 0 0 1 79 33" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M74 25 L81 34 L70 36" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="16" r="4.6" fill="#0E8F86"/>
+        </svg>
+        <span>Este sentido</span>
+      </button>
+      <button class="dir" id="dirB">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(12,14,13,.2)" stroke-width="1.6"/>
+          <path d="M50 16 A34 34 0 0 0 21 33" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M26 25 L19 34 L30 36" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="16" r="4.6" fill="#0E8F86"/>
+        </svg>
+        <span>El otro sentido</span>
+      </button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn--ghost" id="back3">← Cambiar el punto de entrada</button>
+    </div>
+  </section>
+
+  <!-- 4 ─ Confirmación -->
+  <section class="screen" id="s4">
+    <p class="eyebrow">Antes de transmitir</p>
+    <h2>Este es el mensaje<br>que armaron</h2>
+    <p class="lede">Léanlo completo. Si quieren probar otra entrada, todavía pueden volver.</p>
+    <div id="preview"></div>
+    <div class="btn-row">
+      <button class="btn" id="go4">Transmitir el mensaje <span class="arw">→</span></button>
+      <button class="btn btn--ghost" id="back4">← Volver a elegir</button>
+    </div>
+  </section>
+
+  <!-- 5 ─ Resultado -->
+  <section class="screen" id="s5">
+    <p class="eyebrow">Mensaje transmitido</p>
+    <p class="team-badge" id="badge"></p>
+    <h2>Así llega a<br>la organización</h2>
+    <div id="result"></div>
+    <div class="notes" id="notes"></div>
+    <div class="btn-row">
+      <button class="btn" id="go5">¿Y si hubiera empezado por otro punto? <span class="arw">→</span></button>
+    </div>
+  </section>
+
+  <!-- 6 ─ Comparación -->
+  <section class="screen" id="s6">
+    <p class="eyebrow">Dos lecturas</p>
+    <h2>Las mismas<br>ocho piezas</h2>
+    <p class="lede">Ningún fragmento agregado. Ninguno suprimido. Solo cambió por dónde entra quien lee.</p>
+    <div class="compare">
+      <div id="colMine"></div>
+      <div id="colOther"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn--ghost" id="nextRead">Ver otra lectura <span class="arw">↻</span></button>
+      <span class="cycle" id="cycleTag"></span>
+    </div>
+    <p class="verdict">El mensaje nunca estuvo desordenado.</p>
+    <div class="btn-row">
+      <button class="btn" id="go6">Cerrar la transmisión <span class="arw">→</span></button>
+    </div>
+  </section>
+
+  <!-- 7 ─ Cierre -->
+  <section class="screen" id="s7">
+    <div class="closing">
+      <p class="q">¿Por dónde va a entrar quien reciba su próximo mensaje?</p>
+      <p class="sig">Liderazgo en escena</p>
+      <div class="btn-row">
+        <button class="btn btn--ghost" id="reset">Empezar de nuevo</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ── Contenido ───────────────────────────────── */
+const FRAGMENTS = [
+  "El trimestre que viene define el cierre del año.",
+  "Las decisiones que hoy pasan por tres niveles se van a resolver en el primero.",
+  "Los clientes que se fueron nombran una sola razón: nadie les avisó a tiempo.",
+  "Los indicadores de cada área van a estar visibles para todas las personas que trabajan en ella.",
+  "Cada equipo va a contar con dos horas semanales protegidas para formación.",
+  "Las oficinas con menor flujo van a operar con un modelo distinto.",
+  "Los tiempos de respuesta se van a medir con un estándar nuevo en toda la red.",
+  "Nadie va a ser evaluado por un resultado que no pudo influir."
+];
+
+const OPENINGS = [
+  "Este mensaje empieza por el calendario. Lo primero que sabe quien lo recibe es cuánto tiempo queda.",
+  "Este mensaje empieza por quién decide. Lo primero que sabe quien lo recibe es que su firma va a pesar más.",
+  "Este mensaje empieza por quien ya se fue. Lo primero que sabe quien lo recibe es que alguien reclamó.",
+  "Este mensaje empieza por lo que se va a ver. Lo primero que sabe quien lo recibe es que su trabajo queda expuesto.",
+  "Este mensaje empieza por el tiempo de aprender. Lo primero que sabe quien lo recibe es que se le va a devolver algo.",
+  "Este mensaje empieza por las oficinas que cambian. Lo primero que sabe quien lo recibe es que algo va a dejar de funcionar como funcionaba.",
+  "Este mensaje empieza por la medición. Lo primero que sabe quien lo recibe es que hay un estándar nuevo esperándolo.",
+  "Este mensaje empieza por un límite a la evaluación. Lo primero que sabe quien lo recibe es que no cargará con lo ajeno."
+];
+
+const CLOSINGS = [
+  "Termina en el calendario. Lo último que queda en la cabeza es el plazo.",
+  "Termina en la autonomía. Lo último que queda es una atribución nueva.",
+  "Termina en el cliente perdido. Lo último que queda es una ausencia.",
+  "Termina en la visibilidad. Lo último que queda es la sensación de ser observado.",
+  "Termina en las horas protegidas. Lo último que queda es una promesa concreta.",
+  "Termina en las oficinas. Lo último que queda es una incertidumbre sin nombre.",
+  "Termina en el estándar. Lo último que queda es una exigencia.",
+  "Termina en la justicia de la evaluación. Lo último que queda es un alivio."
+];
+
+const TITLES = [
+  "Este es un mensaje sobre el tiempo que queda.",
+  "Este es un mensaje sobre quién decide.",
+  "Este es un mensaje sobre los que se fueron.",
+  "Este es un mensaje sobre lo que se ve.",
+  "Este es un mensaje sobre las personas.",
+  "Este es un mensaje sobre lo que cambia.",
+  "Este es un mensaje sobre el rendimiento.",
+  "Este es un mensaje sobre lo que es justo."
+];
+
+/* ── Estado ──────────────────────────────────── */
+const state = { team:"", entry:null, dir:null, opened:new Set() };
+
+const $ = id => document.getElementById(id);
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el = $(id);
+  el.classList.add('on');
+  window.scrollTo({top:0,behavior:'instant' in window ? 'instant' : 'auto'});
+}
+
+/* ── Logogramas ──────────────────────────────── */
+function rng(seed){
+  let a = seed>>>0;
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a>>>15), 1 | a);
+    t = (t + Math.imul(t ^ (t>>>7), 61 | t)) ^ t;
+    return ((t ^ (t>>>14))>>>0) / 4294967296;
+  };
+}
+const P = (cx,cy,r,deg)=>{
+  const a = (deg-90)*Math.PI/180;
+  return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
+};
+
+function logogram(seed){
+  const r = rng(seed*977 + 13);
+  const cx=50, cy=50, R=32;
+  let s = `<g class="lgw" filter="url(#wobble)">`;
+  s += `<circle class="lg" cx="${cx}" cy="${cy}" r="${R}" stroke-width="${(2.6+r()*1.4).toFixed(2)}"/>`;
+
+  // arcos gruesos sobre el anillo
+  const arcs = 1 + Math.floor(r()*2);
+  for(let i=0;i<arcs;i++){
+    const a1 = r()*360, span = 34 + r()*76, a2 = a1 + span;
+    const [x1,y1]=P(cx,cy,R,a1), [x2,y2]=P(cx,cy,R,a2);
+    s += `<path class="lg" d="M${x1.toFixed(2)} ${y1.toFixed(2)} A${R} ${R} 0 ${span>180?1:0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}" stroke-width="${(5.2+r()*2.6).toFixed(2)}"/>`;
+  }
+  // púas radiales
+  const ticks = 2 + Math.floor(r()*4);
+  for(let i=0;i<ticks;i++){
+    const a = r()*360, out = R + 5 + r()*8;
+    const [x1,y1]=P(cx,cy,R-1,a), [x2,y2]=P(cx,cy,out,a);
+    s += `<path class="lg" d="M${x1.toFixed(2)} ${y1.toFixed(2)} L${x2.toFixed(2)} ${y2.toFixed(2)}" stroke-width="${(1.8+r()*1.4).toFixed(2)}"/>`;
+  }
+  // ganchos exteriores
+  const hooks = 1 + Math.floor(r()*3);
+  for(let i=0;i<hooks;i++){
+    const a = r()*360, rr = 5 + r()*6;
+    const [hx,hy]=P(cx,cy,R+rr*0.7,a);
+    s += `<circle class="lg" cx="${hx.toFixed(2)}" cy="${hy.toFixed(2)}" r="${rr.toFixed(2)}" stroke-width="${(1.6+r()*1.1).toFixed(2)}"/>`;
+  }
+  // puntos sueltos
+  const dots = Math.floor(r()*3);
+  for(let i=0;i<dots;i++){
+    const a = r()*360, rad = R + 8 + r()*6;
+    const [dx,dy]=P(cx,cy,rad,a);
+    s += `<circle class="lgf" cx="${dx.toFixed(2)}" cy="${dy.toFixed(2)}" r="${(1.3+r()*1.5).toFixed(2)}"/>`;
+  }
+  // cuerda interior
+  if(r()>0.4){
+    const a1=r()*360, a2=a1+90+r()*120;
+    const [x1,y1]=P(cx,cy,R,a1), [x2,y2]=P(cx,cy,R,a2);
+    s += `<path class="lg" d="M${x1.toFixed(2)} ${y1.toFixed(2)} L${x2.toFixed(2)} ${y2.toFixed(2)}" stroke-width="${(1.4+r()*1).toFixed(2)}"/>`;
+  }
+  return s + `</g>`;
+}
+
+/* ── Construir el anillo ─────────────────────── */
+const ring = $('ring');
+const marks = [];
+FRAGMENTS.forEach((_,i)=>{
+  const ang = (i/8)*360;
+  const [px,py] = P(50,50,36,ang);
+  const b = document.createElement('button');
+  b.className = 'mark';
+  b.style.left = px+'%';
+  b.style.top  = py+'%';
+  b.setAttribute('aria-label','Fragmento '+(i+1));
+  b.innerHTML = `<span class="halo"></span><svg viewBox="0 0 100 100">${logogram(i+1)}</svg><span class="tick">${String(i+1).padStart(2,'0')}</span>`;
+  b.addEventListener('click',()=>openFragment(i));
+  ring.appendChild(b);
+  marks.push(b);
+});
+
+function openFragment(i){
+  state.entry = i;
+  state.opened.add(i);
+  marks.forEach((m,k)=>{
+    m.classList.toggle('active', k===i);
+    if(state.opened.has(k)) m.classList.add('read');
+  });
+  $('reader').innerHTML =
+    `<p class="frag"><span class="frag-n">Fragmento ${String(i+1).padStart(2,'0')}</span>${FRAGMENTS[i]}</p>`;
+  $('prog').textContent = `${state.opened.size} de 8 fragmentos leídos`;
+  $('ringMsg').innerHTML = 'Fragmento<br>' + String(i+1).padStart(2,'0');
+  $('go2').disabled = false;
+}
+
+/* ── Ensamblaje ──────────────────────────────── */
+function sequence(entry, dir){
+  const out = [];
+  for(let k=0;k<8;k++){
+    out.push(((entry + dir*k) % 8 + 8) % 8);
+  }
+  return out;
+}
+
+function buildDoc(entry, dir){
+  const seq = sequence(entry, dir);
+  const groups = [seq.slice(0,3), seq.slice(3,6), seq.slice(6,8)];
+  const paras = groups.map(g=>'<p>'+g.map(i=>FRAGMENTS[i]).join(' ')+'</p>').join('');
+  return `<div class="doc">
+    <div class="doc-head"><span>Comunicado interno</span><span>Dirección General</span></div>
+    <p class="doc-title">${TITLES[entry]}</p>
+    ${paras}
+  </div>`;
+}
+
+function buildNotes(entry, dir){
+  const seq = sequence(entry, dir);
+  const last = seq[7];
+  return `<p>${OPENINGS[entry]}</p><p>${CLOSINGS[last]}</p>`;
+}
+
+/* ── Navegación ──────────────────────────────── */
+$('go0').addEventListener('click',()=>{
+  const v = $('team').value.trim();
+  state.team = v || 'Equipo sin nombre';
+  show('s1');
+});
+$('team').addEventListener('keydown',e=>{ if(e.key==='Enter') $('go0').click(); });
+
+$('go1').addEventListener('click',()=>show('s2'));
+
+$('go2').addEventListener('click',()=>{
+  if(state.entry===null) return;
+  $('entryEcho').textContent =
+    'Empieza en el fragmento ' + String(state.entry+1).padStart(2,'0') + ': “' + FRAGMENTS[state.entry] + '”';
+  show('s3');
+});
+
+$('back3').addEventListener('click',()=>show('s2'));
+
+function chooseDir(d){
+  state.dir = d;
+  $('preview').innerHTML = buildDoc(state.entry, state.dir);
+  show('s4');
+}
+$('dirF').addEventListener('click',()=>chooseDir(1));
+$('dirB').addEventListener('click',()=>chooseDir(-1));
+
+$('back4').addEventListener('click',()=>show('s3'));
+
+$('go4').addEventListener('click',()=>{
+  $('badge').textContent = state.team;
+  $('result').innerHTML = buildDoc(state.entry, state.dir);
+  $('notes').innerHTML  = buildNotes(state.entry, state.dir);
+  show('s5');
+});
+
+function altReadings(entry, dir){
+  const n = i => String(i+1).padStart(2,'0');
+  return [
+    { entry:(entry+4)%8, dir:dir,  tag:'Si hubiera empezado en el fragmento '+n((entry+4)%8) },
+    { entry:entry,       dir:-dir, tag:'Mismo fragmento '+n(entry)+', sentido contrario' },
+    { entry:(entry+2)%8, dir:dir,  tag:'Si hubiera empezado en el fragmento '+n((entry+2)%8) },
+    { entry:(entry+6)%8, dir:-dir, tag:'Fragmento '+n((entry+6)%8)+', sentido contrario' }
+  ];
+}
+
+let alts = [], altIx = 0;
+
+function paintOther(){
+  const a = alts[altIx];
+  const col = $('colOther');
+  col.innerHTML =
+    `<p class="col-tag">${a.tag}</p>
+     ${buildDoc(a.entry, a.dir)}
+     <div class="notes">${buildNotes(a.entry, a.dir)}</div>`;
+  col.style.animation = 'none';
+  void col.offsetWidth;
+  col.style.animation = '';
+  $('cycleTag').textContent = `Lectura ${altIx+1} de ${alts.length}`;
+}
+
+$('go5').addEventListener('click',()=>{
+  $('colMine').innerHTML =
+    `<p class="col-tag mine">La lectura de ${state.team}</p>
+     ${buildDoc(state.entry, state.dir)}
+     <div class="notes">${buildNotes(state.entry, state.dir)}</div>`;
+  alts = altReadings(state.entry, state.dir);
+  altIx = 0;
+  paintOther();
+  show('s6');
+});
+
+$('nextRead').addEventListener('click',()=>{
+  altIx = (altIx + 1) % alts.length;
+  paintOther();
+});
+
+$('go6').addEventListener('click',()=>show('s7'));
+
+$('reset').addEventListener('click',()=>{
+  state.entry=null; state.dir=null; state.opened.clear(); state.team='';
+  $('team').value='';
+  marks.forEach(m=>m.classList.remove('active','read','dim'));
+  $('reader').innerHTML = '<p class="empty">Ningún fragmento abierto todavía.</p>';
+  $('prog').textContent = '0 de 8 fragmentos leídos';
+  $('ringMsg').innerHTML = 'Toquen<br>una marca';
+  $('go2').disabled = true;
+  show('s0');
+});
+
+})();
+</script>
+</body>
+</html>
