@@ -26,6 +26,7 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 
 html{-webkit-text-size-adjust:100%}
 
@@ -65,6 +66,7 @@ body{
 
 .screen{display:none;padding-top:min(11vh,72px);animation:rise .7s cubic-bezier(.2,.7,.3,1) both}
 .screen.on{display:block}
+.screen--ring{padding-top:min(6vh,44px)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* ── Tipografía ──────────────────────────────── */
@@ -110,7 +112,7 @@ h2{
 .btn{
   display:inline-flex;align-items:center;gap:13px;
   font-family:inherit;font-size:12px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--ink);background:transparent;
+  color:var(--ink);background:transparent;text-align:left;
   border:1px solid var(--ink-35);border-radius:999px;
   padding:16px 30px;cursor:pointer;
   transition:border-color .35s,background .35s,color .35s;
@@ -123,13 +125,32 @@ h2{
 .btn--ghost:hover{color:var(--ink);border-color:var(--ink-35)}
 .btn-row{display:flex;flex-wrap:wrap;gap:13px;margin-top:32px;align-items:center}
 
+.link-btn{
+  background:none;border:0;border-bottom:1px solid var(--ink-15);cursor:pointer;
+  font-family:inherit;font-size:10.5px;font-weight:400;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-55);padding:12px 0 7px;transition:color .3s,border-color .3s;
+}
+.link-btn:hover,.link-btn:focus-visible{color:var(--ink);border-color:var(--ink-35)}
+.foot{margin-top:54px}
+
 :focus-visible{outline:2px solid var(--signal);outline-offset:4px}
+
+/* ── Logogramas en línea ─────────────────────── */
+.g{display:inline-block;width:1.5em;height:1.5em;vertical-align:-.42em;overflow:visible}
 
 /* ── El anillo ───────────────────────────────── */
 .ring-wrap{
-  position:relative;width:min(86vw,392px);aspect-ratio:1;margin:34px auto 0;
+  position:relative;width:min(84vw,392px,50vh);aspect-ratio:1;margin:30px auto 0;
 }
-.ring-line{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ring-line{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.seg{fill:none;stroke:var(--ink-15);stroke-width:.4;stroke-linecap:round;transition:stroke .7s,stroke-width .7s}
+.seg.read{stroke:var(--ink);stroke-width:1.25}
+.ring-wrap.full .seg.read{stroke-width:1.6}
+.ring-wrap.chaining .seg.read{stroke:var(--ink-15);stroke-width:.5}
+.link{fill:none;stroke:var(--signal);stroke-width:2;stroke-linecap:round;opacity:0}
+.link.on{opacity:1;transition:stroke-dashoffset .95s cubic-bezier(.4,.1,.3,1)}
+.arrow{fill:none;stroke:var(--signal);stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round;animation:fadein .6s ease both}
+
 .ring-center{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:44%;text-align:center;pointer-events:none;
@@ -139,30 +160,38 @@ h2{
 }
 
 .mark{
-  position:absolute;width:clamp(54px,16.5vw,72px);aspect-ratio:1;
+  position:absolute;width:clamp(50px,15.5vw,68px);aspect-ratio:1;
   transform:translate(-50%,-50%);
-  background:none;border:0;padding:0;cursor:pointer;
-  opacity:.72;transition:opacity .4s,transform .4s;
+  background:none;border:0;padding:0;cursor:pointer;color:var(--ink);
+  opacity:.46;transition:opacity .45s,transform .45s,color .45s;
 }
 .mark svg{width:100%;height:100%;display:block;overflow:visible}
-.mark .lg{stroke:var(--ink);fill:none;stroke-linecap:round;transition:stroke .4s}
-.mark .lgf{fill:var(--ink);stroke:none;transition:fill .4s}
-.mark:hover,.mark:focus-visible{opacity:1}
-.mark.read{opacity:.95}
-.mark.active{opacity:1;transform:translate(-50%,-50%) scale(1.16)}
-.mark.active .lg{stroke:var(--signal)}
-.mark.active .lgf{fill:var(--signal)}
-.mark.dim{opacity:.16;pointer-events:none}
+.mark:hover,.mark:focus-visible{opacity:.85}
+.mark.read{opacity:.9}
+.mark.open{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+.mark.active{opacity:1;color:var(--signal);transform:translate(-50%,-50%) scale(1.16)}
+.mark.dim{opacity:.14;pointer-events:none}
+.mark.nb{opacity:1;animation:pulse 1.9s ease-in-out infinite}
+.mark.wait{opacity:.14;pointer-events:none}
+.mark.lit{opacity:1;color:var(--signal);transform:translate(-50%,-50%) scale(1.18);pointer-events:none}
+.mark.done{opacity:1;pointer-events:none}
+@keyframes pulse{
+  0%,100%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.1)}
+}
 .mark .halo{
   position:absolute;inset:-16%;border-radius:50%;
   background:radial-gradient(circle,rgba(14,143,134,.22) 0%,transparent 68%);
   opacity:0;transition:opacity .45s;
 }
-.mark.active .halo{opacity:1}
-.mark .tick{
-  position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);
-  font-size:9px;letter-spacing:.16em;color:var(--ink-35);
+.mark.active .halo,.mark.lit .halo{opacity:1}
+
+.pip{
+  position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ink);
+  transform:translate(-50%,-50%) scale(0);opacity:0;transition:transform .5s,opacity .5s;pointer-events:none;
 }
+.pip.on{transform:translate(-50%,-50%) scale(1);opacity:.75}
+.ring-wrap.dirphase .pip,.ring-wrap.chaining .pip{opacity:0}
 
 /* ── Lector de fragmento ─────────────────────── */
 .reader{
@@ -176,27 +205,28 @@ h2{
   animation:fadein .5s ease both;
 }
 @keyframes fadein{from{opacity:0}to{opacity:1}}
-.reader .frag-n{
-  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.3em;
-  color:var(--signal);text-transform:uppercase;display:block;margin-bottom:12px;
+.frag-n{
+  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.3em;font-weight:400;
+  color:var(--ink-35);text-transform:uppercase;display:block;margin-bottom:12px;
 }
+.frag-n.sel{color:var(--signal)}
+.frag-n .g{margin-right:8px;width:1.9em;height:1.9em;vertical-align:-.62em}
 .progress{
   font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--ink-35);margin-top:20px;
 }
 
-/* ── Dirección ───────────────────────────────── */
-.dirs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
-.dir{
-  background:transparent;border:1px solid var(--ink-15);border-radius:14px;
-  padding:22px 12px 18px;cursor:pointer;font-family:inherit;color:var(--ink);
-  transition:border-color .35s,background .35s;
+/* ── Encadenado ──────────────────────────────── */
+.ticker{position:relative;height:132px;overflow:hidden}
+.tk{
+  position:absolute;left:0;right:0;top:0;
+  font-family:'Newsreader',Georgia,serif;font-weight:300;
+  font-size:clamp(19px,5.2vw,24px);line-height:1.42;color:var(--ink);
+  transform:translateY(140px);opacity:0;
+  transition:transform .8s cubic-bezier(.2,.7,.3,1),opacity .6s ease;
 }
-.dir:hover,.dir:focus-visible{border-color:var(--signal);background:rgba(14,143,134,.05)}
-.dir svg{width:78px;height:78px;display:block;margin:0 auto 14px}
-.dir span{
-  display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);
-}
+.tk.cur{transform:none;opacity:1}
+.tk.out{transform:translateY(-140px);opacity:0}
 
 /* ── Comunicado ──────────────────────────────── */
 .doc{
@@ -213,7 +243,9 @@ h2{
   font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(17px,4.4vw,21px);
   line-height:1.3;margin-bottom:20px;letter-spacing:-.005em;
 }
-.doc p{
+.doc-title.reveal{animation:titlein 1.3s .7s cubic-bezier(.2,.7,.3,1) both}
+@keyframes titlein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.doc p:not(.doc-title){
   font-family:'Newsreader',Georgia,serif;font-weight:300;
   font-size:clamp(16px,4.1vw,18.5px);line-height:1.62;color:var(--ink-80);
   margin-bottom:15px;
@@ -224,22 +256,99 @@ h2{
 .notes p{font-size:13.5px;color:var(--ink-55);margin-bottom:11px;max-width:46ch}
 .notes p:last-child{margin-bottom:0}
 
+/* ── Tu recuerdo del futuro ──────────────────── */
+.glyph-card{
+  background:var(--paper);border:1px solid var(--ink-15);margin-top:26px;
+  padding:clamp(14px,4vw,26px);box-shadow:0 18px 46px -34px rgba(12,14,13,.6);
+}
+.glyph-card svg{display:block;width:100%;max-width:420px;margin:0 auto;overflow:visible}
+.cap{
+  font-size:12.5px;color:var(--ink-55);max-width:40ch;margin:16px auto 0;text-align:center;
+}
+.weights{margin-top:34px}
+.w-head,.w-foot{
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-35);
+}
+.w-head{margin-bottom:14px}
+.w-foot{margin-top:14px;text-align:right}
+.w-row{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:center;margin-bottom:9px}
+.w-row .g{width:28px;height:28px;vertical-align:0}
+.w-row span{display:block;font-size:14px;line-height:1.25;margin-bottom:5px}
+.w-row i{display:block;background:var(--ink);border-radius:9px}
+.w-row.first{color:var(--signal)}
+.w-row.first i{background:var(--signal)}
+
+.tri-lead{
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-35);margin-top:40px;
+}
+.tri{display:grid;gap:26px;margin-top:22px}
+@media(min-width:760px){.tri{grid-template-columns:1fr 1fr 1fr;gap:22px}}
+.tri-item svg{width:38px;height:38px;display:block;margin-bottom:12px;overflow:visible}
+.tri-item b{
+  display:block;font-size:10.5px;font-weight:500;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--signal);margin-bottom:7px;
+}
+.tri-item p{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;
+  font-size:clamp(17px,4.5vw,20px);line-height:1.45;color:var(--ink-80);max-width:34ch;
+}
+
+.practices{margin-top:22px}
+.pr{display:grid;grid-template-columns:46px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--ink-15)}
+.pr:last-child{border-bottom:1px solid var(--ink-15)}
+.pr .g{width:44px;height:44px;vertical-align:0}
+.pr small{
+  display:block;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-35);margin-bottom:7px;
+}
+.pr p{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;
+  font-size:clamp(16px,4.2vw,18.5px);line-height:1.5;color:var(--ink-80);
+}
+
 /* ── Comparación ─────────────────────────────── */
 .compare{display:grid;gap:24px;margin-top:24px}
 @media(min-width:760px){.compare{grid-template-columns:1fr 1fr;gap:20px}}
 .col-tag{
   font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
-  color:var(--ink-35);margin-bottom:10px;
+  color:var(--ink-35);margin-bottom:10px;line-height:1.9;
 }
 .col-tag.mine{color:var(--signal)}
+.col-tag .g{margin-right:6px;width:2em;height:2em;vertical-align:-.7em}
 .compare .doc{margin-top:0}
-.compare .doc p{font-size:15px;line-height:1.58}
+.compare .doc p:not(.doc-title){font-size:15px;line-height:1.58}
 .compare .doc-title{font-size:16px}
 #colOther{animation:swap .55s ease both}
 @keyframes swap{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 .cycle{
   font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-35);
 }
+
+.picker{margin-top:22px;padding:20px 0 4px;border-top:1px solid var(--ink-15)}
+.picker .hint{margin-top:0}
+.pk-q{
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-35);margin:20px 0 12px;
+}
+.pk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:340px}
+.pk-grid button{
+  background:none;border:1px solid var(--ink-15);border-radius:12px;padding:8px;cursor:pointer;
+  color:var(--ink);opacity:.75;transition:opacity .3s,border-color .3s,color .3s;aspect-ratio:1;
+}
+.pk-grid button svg{width:100%;height:100%;display:block;overflow:visible}
+.pk-grid button.sel{color:var(--signal);border-color:var(--signal);opacity:1}
+.pk-frag{
+  font-family:'Newsreader',Georgia,serif;font-weight:300;font-size:17px;line-height:1.45;
+  margin-top:16px;max-width:38ch;
+}
+.pk-next{display:grid;gap:10px;margin-top:4px}
+.pk-next button{
+  display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center;text-align:left;
+  background:none;border:1px solid var(--ink-15);border-radius:12px;padding:10px 14px;cursor:pointer;
+  font-family:'Newsreader',Georgia,serif;font-weight:300;font-size:16px;line-height:1.35;color:var(--ink-80);
+  transition:border-color .3s,background .3s;
+}
+.pk-next button:hover,.pk-next button:focus-visible{border-color:var(--signal);background:rgba(14,143,134,.05)}
+.pk-next .g{width:32px;height:32px;vertical-align:0}
+.pk-note{font-size:13px;color:var(--ink-55);margin-top:14px}
 
 .verdict{
   font-family:'Newsreader',Georgia,serif;font-weight:300;font-style:italic;
@@ -249,7 +358,7 @@ h2{
 
 /* ── Cierre ──────────────────────────────────── */
 .closing{
-  min-height:66vh;display:flex;flex-direction:column;justify-content:center;
+  min-height:58vh;display:flex;flex-direction:column;justify-content:center;
 }
 .closing .q{
   font-family:'Newsreader',Georgia,serif;font-weight:300;
@@ -258,14 +367,37 @@ h2{
 .closing .sig{
   margin-top:52px;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-35);
 }
+.after{border-top:1px solid var(--ink-15);padding-top:6px}
+.after .btn-row{margin-top:20px}
 
 .team-badge{
   font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-35);
   margin-bottom:16px;
 }
 
+/* ── Historial ───────────────────────────────── */
+.h-list{margin-top:26px}
+.h-item{border-top:1px solid var(--ink-15)}
+.h-item:last-child{border-bottom:1px solid var(--ink-15)}
+.h-head{
+  display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:center;width:100%;text-align:left;
+  background:none;border:0;padding:17px 0;cursor:pointer;font-family:inherit;color:var(--ink);
+}
+.h-head .g{width:42px;height:42px;vertical-align:0;color:var(--signal)}
+.h-team{display:block;font-size:17px;font-weight:300;line-height:1.25}
+.h-when{
+  display:block;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-35);margin:5px 0 4px;
+}
+.h-title{
+  display:block;font-family:'Newsreader',Georgia,serif;font-style:italic;font-weight:300;
+  font-size:15.5px;color:var(--ink-55);line-height:1.35;
+}
+.h-body{padding:0 0 24px}
+.h-body .doc{margin-top:4px}
+.h-empty{font-size:13.5px;color:var(--ink-55);margin-top:26px}
+
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
 </style>
 </head>
@@ -287,7 +419,7 @@ h2{
   <section class="screen on" id="s0">
     <p class="eyebrow">Liderazgo en escena</p>
     <h1>El mensaje<br>circular</h1>
-    <p class="lede">Una transmisión llegó incompleta. Su equipo tiene que ponerla en orden y hacerla llegar.</p>
+    <p class="lede">Una transmisión llegó en desorden. Su equipo tiene que reconstruirla y hacerla llegar.</p>
     <div class="field">
       <label for="team">Nombre del equipo</label>
       <input id="team" type="text" placeholder="Escriban aquí" autocomplete="off" maxlength="28">
@@ -295,15 +427,16 @@ h2{
     <div class="btn-row">
       <button class="btn" id="go0">Recibir el mensaje <span class="arw">→</span></button>
     </div>
+    <div class="foot">
+      <button class="link-btn" id="hist0" hidden></button>
+    </div>
   </section>
 
   <!-- 1 ─ El encargo -->
   <section class="screen" id="s1">
-    <p class="eyebrow">Transmisión recibida</p>
-    <h2>Ocho fragmentos.<br>Ninguno perdido.</h2>
-    <p class="lede">Llegó un comunicado que la Dirección General necesita transmitir a toda la organización.</p>
-    <p class="lede">Durante la transmisión algo falló: el mensaje llegó sin orden. Están los ocho fragmentos completos, sin repeticiones.</p>
-    <p class="lede"><em>Su tarea es reconstruirlo y transmitirlo.</em></p>
+    <p class="eyebrow" id="e1"></p>
+    <h2 id="h1x"></h2>
+    <div id="l1"></div>
     <hr class="rule">
     <p class="hint">Van a tomar dos decisiones. Nada más.<br>Primero, por dónde empieza el mensaje. Después, hacia qué lado se lee.</p>
     <div class="btn-row">
@@ -311,65 +444,32 @@ h2{
     </div>
   </section>
 
-  <!-- 2 ─ El anillo -->
-  <section class="screen" id="s2">
-    <p class="step-tag">Paso 1 de 2</p>
-    <h2>Elijan por dónde<br>empieza el mensaje</h2>
-    <p class="lede">Toquen cada marca para leer su fragmento. Cuando tengan claro cuál va primero, confírmenlo abajo.</p>
+  <!-- 2 y 3 ─ El anillo: lectura, entrada, dirección y encadenado -->
+  <section class="screen screen--ring" id="sR">
+    <p class="step-tag" id="rTag">Paso 1 de 2</p>
+    <h2 id="rH"></h2>
+    <p class="lede" id="rLede"></p>
 
     <div class="ring-wrap" id="ring">
-      <svg class="ring-line" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(12,14,13,.14)" stroke-width=".35"/>
-      </svg>
-      <div class="ring-center"><p id="ringMsg">Toquen<br>una marca</p></div>
+      <svg class="ring-line" id="ringSvg" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      <div class="ring-center"><p id="ringMsg"></p></div>
     </div>
 
-    <div class="reader" id="reader" aria-live="polite">
-      <p class="empty">Ningún fragmento abierto todavía.</p>
-    </div>
-    <p class="progress" id="prog">0 de 8 fragmentos leídos</p>
+    <div class="reader" id="reader" aria-live="polite"></div>
+    <p class="progress" id="prog"></p>
 
     <div class="btn-row">
-      <button class="btn" id="go2" disabled>Empezar por este fragmento <span class="arw">→</span></button>
+      <button class="btn" id="goEntry" disabled>Empezar por este fragmento <span class="arw">→</span></button>
+      <button class="btn btn--ghost" id="backEntry" hidden>← Cambiar el punto de entrada</button>
+      <button class="btn btn--ghost" id="skipChain" hidden>Saltar <span class="arw">→</span></button>
     </div>
   </section>
 
-  <!-- 3 ─ Dirección -->
-  <section class="screen" id="s3">
-    <p class="step-tag">Paso 2 de 2</p>
-    <h2>Elijan hacia qué<br>lado se lee</h2>
-    <p class="lede">El mensaje empieza en la marca que escogieron. Desde ahí, el anillo se puede recorrer en dos sentidos.</p>
-    <p class="hint" id="entryEcho"></p>
-    <div class="dirs">
-      <button class="dir" id="dirF">
-        <svg viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(12,14,13,.2)" stroke-width="1.6"/>
-          <path d="M50 16 A34 34 0 0 1 79 33" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round"/>
-          <path d="M74 25 L81 34 L70 36" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="50" cy="16" r="4.6" fill="#0E8F86"/>
-        </svg>
-        <span>Este sentido</span>
-      </button>
-      <button class="dir" id="dirB">
-        <svg viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(12,14,13,.2)" stroke-width="1.6"/>
-          <path d="M50 16 A34 34 0 0 0 21 33" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round"/>
-          <path d="M26 25 L19 34 L30 36" fill="none" stroke="#0E8F86" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="50" cy="16" r="4.6" fill="#0E8F86"/>
-        </svg>
-        <span>El otro sentido</span>
-      </button>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn--ghost" id="back3">← Cambiar el punto de entrada</button>
-    </div>
-  </section>
-
-  <!-- 4 ─ Confirmación -->
+  <!-- 4 ─ Mensaje armado -->
   <section class="screen" id="s4">
     <p class="eyebrow">Antes de transmitir</p>
     <h2>Este es el mensaje<br>que armaron</h2>
-    <p class="lede">Léanlo completo. Si quieren probar otra entrada, todavía pueden volver.</p>
+    <p class="lede">Léanlo completo. Si no es el que quieren hacer llegar, pueden volver a elegir la entrada y el sentido.</p>
     <div id="preview"></div>
     <div class="btn-row">
       <button class="btn" id="go4">Transmitir el mensaje <span class="arw">→</span></button>
@@ -385,7 +485,36 @@ h2{
     <div id="result"></div>
     <div class="notes" id="notes"></div>
     <div class="btn-row">
-      <button class="btn" id="go5">¿Y si hubiera empezado por otro punto? <span class="arw">→</span></button>
+      <button class="btn" id="go5">Tu recuerdo del futuro <span class="arw">→</span></button>
+    </div>
+  </section>
+
+  <!-- F ─ Tu recuerdo del futuro -->
+  <section class="screen" id="sF">
+    <p class="eyebrow">Tu recuerdo del futuro</p>
+    <p class="team-badge" id="fBadge"></p>
+    <h2 id="fName"></h2>
+    <p class="lede" id="fLede"></p>
+
+    <div class="glyph-card" id="fGlyph"></div>
+    <p class="cap">El trazo nace grueso donde empieza el mensaje y se adelgaza hacia donde termina.</p>
+
+    <div class="weights" id="fWeights"></div>
+
+    <p class="tri-lead">Un equipo que pone esto primero</p>
+    <div class="tri" id="fTri"></div>
+
+    <hr class="rule">
+    <p class="step-tag">Para equilibrar</p>
+    <p class="lede">Todo orden deja algo al fondo. Tres prácticas diarias para devolverle peso.</p>
+    <div class="practices" id="fPract"></div>
+
+    <div class="btn-row">
+      <button class="btn btn--ghost" id="dl">Descargar <span class="arw">↓</span></button>
+      <button class="btn btn--ghost" id="sh" hidden>Compartir <span class="arw">↗</span></button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="goF">¿Y si hubiera empezado por otro punto? <span class="arw">→</span></button>
     </div>
   </section>
 
@@ -402,6 +531,10 @@ h2{
       <button class="btn btn--ghost" id="nextRead">Ver otra lectura <span class="arw">↻</span></button>
       <span class="cycle" id="cycleTag"></span>
     </div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="link-btn" id="pickToggle">Traer la lectura de otra mesa</button>
+    </div>
+    <div class="picker" id="picker" hidden></div>
     <p class="verdict">El mensaje nunca estuvo desordenado.</p>
     <div class="btn-row">
       <button class="btn" id="go6">Cerrar la transmisión <span class="arw">→</span></button>
@@ -413,9 +546,28 @@ h2{
     <div class="closing">
       <p class="q">¿Por dónde va a entrar quien reciba su próximo mensaje?</p>
       <p class="sig">Liderazgo en escena</p>
+    </div>
+    <div class="after">
       <div class="btn-row">
-        <button class="btn btn--ghost" id="reset">Empezar de nuevo</button>
+        <button class="btn" id="otherMsg">Recibir otro mensaje <span class="arw">→</span></button>
+        <button class="btn btn--ghost" id="rearm">Volver a armar este mensaje</button>
       </div>
+      <div class="btn-row">
+        <button class="link-btn" id="hist7">Mensajes transmitidos</button>
+        <button class="link-btn" id="reset">Empezar con otro equipo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- H ─ Historial -->
+  <section class="screen" id="sH">
+    <p class="eyebrow">En este dispositivo</p>
+    <h2>Mensajes<br>transmitidos</h2>
+    <p class="lede">Cada uno quedó como lo armó su equipo. Toquen un mensaje para leerlo completo.</p>
+    <div class="h-list" id="hList"></div>
+    <div class="btn-row">
+      <button class="btn btn--ghost" id="histBack">← Volver</button>
+      <button class="link-btn" id="histClear">Borrar el historial</button>
     </div>
   </section>
 
@@ -425,64 +577,248 @@ h2{
 (function(){
 "use strict";
 
+/* ── Configuración ───────────────────────────── */
+// 'giro'  → al empezar de nuevo el anillo gira o se refleja: cada fragmento cambia de lugar,
+//           pero conserva a sus dos vecinos. Las 16 lecturas son las mismas en todos los teléfonos.
+// 'libre' → los ocho fragmentos se barajan sin restricción: cambian también los vecinos.
+const LAYOUT_MODE = 'giro';
+const STEP_MS = 1700;                       // ritmo del encadenado, por fragmento
+const KEY_S = 'mensajeCircular.v2.estado';
+const KEY_H = 'mensajeCircular.v2.historial';
+const MAX_AGE = 8*60*60*1000;               // una sesión a medias se retoma hasta 8 horas después
+
 /* ── Contenido ───────────────────────────────── */
-const FRAGMENTS = [
-  "El trimestre que viene define el cierre del año.",
-  "Las decisiones que hoy pasan por tres niveles se van a resolver en el primero.",
-  "Los clientes que se fueron nombran una sola razón: nadie les avisó a tiempo.",
-  "Los indicadores de cada área van a estar visibles para todas las personas que trabajan en ella.",
-  "Cada equipo va a contar con dos horas semanales protegidas para formación.",
-  "Las oficinas con menor flujo van a operar con un modelo distinto.",
-  "Los tiempos de respuesta se van a medir con un estándar nuevo en toda la red.",
-  "Nadie va a ser evaluado por un resultado que no pudo influir."
-];
-
-const OPENINGS = [
-  "Este mensaje empieza por el calendario. Lo primero que sabe quien lo recibe es cuánto tiempo queda.",
-  "Este mensaje empieza por quién decide. Lo primero que sabe quien lo recibe es que su firma va a pesar más.",
-  "Este mensaje empieza por quien ya se fue. Lo primero que sabe quien lo recibe es que alguien reclamó.",
-  "Este mensaje empieza por lo que se va a ver. Lo primero que sabe quien lo recibe es que su trabajo queda expuesto.",
-  "Este mensaje empieza por el tiempo de aprender. Lo primero que sabe quien lo recibe es que se le va a devolver algo.",
-  "Este mensaje empieza por las oficinas que cambian. Lo primero que sabe quien lo recibe es que algo va a dejar de funcionar como funcionaba.",
-  "Este mensaje empieza por la medición. Lo primero que sabe quien lo recibe es que hay un estándar nuevo esperándolo.",
-  "Este mensaje empieza por un límite a la evaluación. Lo primero que sabe quien lo recibe es que no cargará con lo ajeno."
-];
-
-const CLOSINGS = [
-  "Termina en el calendario. Lo último que queda en la cabeza es el plazo.",
-  "Termina en la autonomía. Lo último que queda es una atribución nueva.",
-  "Termina en el cliente perdido. Lo último que queda es una ausencia.",
-  "Termina en la visibilidad. Lo último que queda es la sensación de ser observado.",
-  "Termina en las horas protegidas. Lo último que queda es una promesa concreta.",
-  "Termina en las oficinas. Lo último que queda es una incertidumbre sin nombre.",
-  "Termina en el estándar. Lo último que queda es una exigencia.",
-  "Termina en la justicia de la evaluación. Lo último que queda es un alivio."
-];
-
-const TITLES = [
-  "Este es un mensaje sobre el tiempo que queda.",
-  "Este es un mensaje sobre quién decide.",
-  "Este es un mensaje sobre los que se fueron.",
-  "Este es un mensaje sobre lo que se ve.",
-  "Este es un mensaje sobre las personas.",
-  "Este es un mensaje sobre lo que cambia.",
-  "Este es un mensaje sobre el rendimiento.",
-  "Este es un mensaje sobre lo que es justo."
-];
-
-/* ── Estado ──────────────────────────────────── */
-const state = { team:"", entry:null, dir:null, opened:new Set() };
-
-const $ = id => document.getElementById(id);
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-  const el = $(id);
-  el.classList.add('on');
-  window.scrollTo({top:0,behavior:'instant' in window ? 'instant' : 'auto'});
+// Cada mensaje trae ocho fragmentos y siete arrays paralelos, todos indexados por fragmento.
+// Para agregar un tercer comunicado basta sumar otro objeto con la misma forma.
+const MESSAGES = [
+{
+  label:"Primer comunicado",
+  seed:1,
+  fragments:[
+    "El trimestre que viene define el cierre del año.",
+    "Las decisiones que hoy pasan por tres niveles se van a resolver en el primero.",
+    "Los clientes que se fueron nombran una sola razón: nadie les avisó a tiempo.",
+    "Los indicadores de cada área van a estar visibles para todas las personas que trabajan en ella.",
+    "Cada equipo va a contar con dos horas semanales protegidas para formación.",
+    "Las oficinas con menor flujo van a operar con un modelo distinto.",
+    "Los tiempos de respuesta se van a medir con un estándar nuevo en toda la red.",
+    "Nadie va a ser evaluado por un resultado que no pudo influir."
+  ],
+  titles:[
+    "Este es un mensaje sobre el tiempo que queda.",
+    "Este es un mensaje sobre quién decide.",
+    "Este es un mensaje sobre los que se fueron.",
+    "Este es un mensaje sobre lo que se ve.",
+    "Este es un mensaje sobre las personas.",
+    "Este es un mensaje sobre lo que cambia.",
+    "Este es un mensaje sobre el rendimiento.",
+    "Este es un mensaje sobre lo que es justo."
+  ],
+  openings:[
+    "Este mensaje empieza por el calendario. Lo primero que sabe quien lo recibe es cuánto tiempo queda.",
+    "Este mensaje empieza por quién decide. Lo primero que sabe quien lo recibe es que su firma va a pesar más.",
+    "Este mensaje empieza por quien ya se fue. Lo primero que sabe quien lo recibe es que alguien reclamó.",
+    "Este mensaje empieza por lo que se va a ver. Lo primero que sabe quien lo recibe es que su trabajo queda expuesto.",
+    "Este mensaje empieza por el tiempo de aprender. Lo primero que sabe quien lo recibe es que se le va a devolver algo.",
+    "Este mensaje empieza por las oficinas que cambian. Lo primero que sabe quien lo recibe es que algo va a dejar de funcionar como funcionaba.",
+    "Este mensaje empieza por la medición. Lo primero que sabe quien lo recibe es que hay un estándar nuevo esperándolo.",
+    "Este mensaje empieza por un límite a la evaluación. Lo primero que sabe quien lo recibe es que no cargará con lo ajeno."
+  ],
+  closings:[
+    "Termina en el calendario. Lo último que queda en la cabeza es el plazo.",
+    "Termina en la autonomía. Lo último que queda es una atribución nueva.",
+    "Termina en el cliente perdido. Lo último que queda es una ausencia.",
+    "Termina en la visibilidad. Lo último que queda es la sensación de ser observado.",
+    "Termina en las horas protegidas. Lo último que queda es una promesa concreta.",
+    "Termina en las oficinas. Lo último que queda es una incertidumbre sin nombre.",
+    "Termina en el estándar. Lo último que queda es una exigencia.",
+    "Termina en la justicia de la evaluación. Lo último que queda es un alivio."
+  ],
+  // nombre corto de lo que cada fragmento pone sobre la mesa
+  asuntos:[
+    "el calendario","quién decide","quien ya se fue","lo que se ve",
+    "el tiempo de aprender","lo que cambia","la medición","lo justo"
+  ],
+  // el futuro que se abre según el fragmento de entrada
+  futuros:[
+    { nombre:"Un futuro con fecha",
+      piensa:"el porvenir como una cuenta regresiva: cada semana tiene nombre y cada plazo, un dueño.",
+      construye:"por tramos cortos, con entregas que se pueden tocar antes de que el año se cierre.",
+      anticipa:"los cuellos de botella, las semanas en que todo coincide, el momento exacto en que ya será tarde." },
+    { nombre:"Un futuro que se decide cerca",
+      piensa:"el porvenir como algo que se resuelve en el lugar donde ocurre, sin esperar una firma lejana.",
+      construye:"criterio en la primera línea: gente que sabe por qué decide lo que decide.",
+      anticipa:"los problemas pequeños antes de que escalen, porque quien los ve primero ya puede actuar." },
+    { nombre:"Un futuro que escucha lo perdido",
+      piensa:"el porvenir desde una silla vacía: lo que alguien dijo al irse sirve de mapa.",
+      construye:"avisos, llamadas hechas a tiempo, canales por los que una mala noticia viaja rápido.",
+      anticipa:"la próxima despedida cuando todavía es una queja a media voz." },
+    { nombre:"Un futuro a la vista",
+      piensa:"el porvenir como un tablero compartido: lo que todos pueden mirar, todos pueden corregir.",
+      construye:"conversaciones con el mismo dato sobre la mesa, sin versiones privadas de la realidad.",
+      anticipa:"las desviaciones cuando apenas asoman, porque hay más ojos puestos sobre la misma cifra." },
+    { nombre:"Un futuro que se aprende",
+      piensa:"el porvenir como una capacidad que todavía no existe y que alguien tiene que cultivar.",
+      construye:"tiempo protegido, oficio, gente que dentro de un año sabrá hacer lo que hoy nadie sabe.",
+      anticipa:"las destrezas que van a hacer falta antes de que el mercado las cobre." },
+    { nombre:"Un futuro con otra forma",
+      piensa:"el porvenir como un rediseño: lo que funcionó hasta ayer admite otra versión.",
+      construye:"modelos de prueba en los bordes, allí donde el cambio cuesta menos y enseña más.",
+      anticipa:"lo que va a quedar obsoleto y se mueve antes de que la costumbre lo defienda." },
+    { nombre:"Un futuro que se puede medir",
+      piensa:"el porvenir como una vara común: una misma medida para toda la red.",
+      construye:"ritmo, procesos que se pueden comparar, mejoras que se notan de un mes al siguiente.",
+      anticipa:"dónde se va a perder el tiempo, porque ya sabe cuánto debería tardar cada cosa." },
+    { nombre:"Un futuro con reglas claras",
+      piensa:"el porvenir como un acuerdo: cada quien responde por lo que estuvo en sus manos.",
+      construye:"una evaluación en la que se puede creer, y con ella gente dispuesta a asumir encargos difíciles.",
+      anticipa:"el desgaste que deja una cuenta mal cobrada y lo desactiva antes de que aparezca." }
+  ],
+  // práctica diaria que le devuelve peso a cada fragmento cuando queda al fondo
+  practicas:[
+    "Al empezar el día, digan en voz alta qué vence esta semana y quién lo está esperando.",
+    "Devuelvan cada día una decisión a quien está más cerca del problema, con una sola pregunta: ¿qué harías tú?",
+    "Antes de cerrar la jornada, avísenle a una persona algo que todavía no sabe y que le va a afectar.",
+    "Compartan hoy un número que normalmente se queda en una sola pantalla.",
+    "Reserven veinte minutos diarios sin reuniones para que alguien del equipo aprenda algo que hoy no sabe hacer.",
+    "Nombren cada día una costumbre del equipo y pregúntense para quién sigue funcionando.",
+    "Elijan una sola tarea repetida y anoten cuánto tardó hoy; mañana vuelvan a mirar el número.",
+    "Antes de pedir cuentas por un resultado, pregunten qué parte de ese resultado estaba en manos de la persona."
+  ]
+},
+{
+  label:"Segundo comunicado",
+  seed:41,
+  fragments:[
+    "Tres equipos van a probar el servicio nuevo con clientes reales antes de fin de mes.",
+    "El presupuesto de este año reserva una parte para ideas que todavía no tienen dueño.",
+    "Quienes atienden en las sucursales escuchan todos los días lo que ninguna encuesta registra.",
+    "Las áreas que nunca han trabajado juntas van a compartir una misma mesa durante noventa días.",
+    "Los ahorros de las familias que confían en este banco no entran en ninguna prueba.",
+    "Otro banco lanzó hace seis meses un servicio que los clientes ya están usando.",
+    "La Dirección ya decidió hacia dónde va la organización en los próximos cinco años.",
+    "Cualquier persona puede detener un proyecto si ve un riesgo que los demás no vieron."
+  ],
+  titles:[
+    "Este es un mensaje sobre lo que se pone a prueba.",
+    "Este es un mensaje sobre lo que todavía no existe.",
+    "Este es un mensaje sobre quienes escuchan.",
+    "Este es un mensaje sobre trabajar con otros.",
+    "Este es un mensaje sobre lo que no se arriesga.",
+    "Este es un mensaje sobre quien llegó antes.",
+    "Este es un mensaje sobre el rumbo.",
+    "Este es un mensaje sobre quién puede decir que no."
+  ],
+  openings:[
+    "Este mensaje empieza por una prueba. Lo primero que sabe quien lo recibe es que algo sale a la calle antes de estar terminado.",
+    "Este mensaje empieza por un dinero sin destino fijo. Lo primero que sabe quien lo recibe es que hay lugar para lo que nadie ha propuesto.",
+    "Este mensaje empieza por las sucursales. Lo primero que sabe quien lo recibe es que alguien ya tiene la información que se anda buscando.",
+    "Este mensaje empieza por una mesa compartida. Lo primero que sabe quien lo recibe es que va a trabajar con gente que no conoce.",
+    "Este mensaje empieza por los ahorros. Lo primero que sabe quien lo recibe es que hay algo que nadie va a poner en juego.",
+    "Este mensaje empieza por otro banco. Lo primero que sabe quien lo recibe es que alguien llegó primero.",
+    "Este mensaje empieza por una decisión tomada. Lo primero que sabe quien lo recibe es que el rumbo ya tiene dueño.",
+    "Este mensaje empieza por un freno. Lo primero que sabe quien lo recibe es que tiene permiso para detener lo que ve mal."
+  ],
+  closings:[
+    "Termina en la prueba. Lo último que queda es una fecha cercana.",
+    "Termina en el dinero reservado. Lo último que queda es una puerta entreabierta.",
+    "Termina en las sucursales. Lo último que queda es una voz que casi nadie consulta.",
+    "Termina en la mesa compartida. Lo último que queda es una convivencia por estrenar.",
+    "Termina en los ahorros. Lo último que queda es un límite.",
+    "Termina en el otro banco. Lo último que queda es una comparación.",
+    "Termina en el rumbo. Lo último que queda es una certeza que vino de arriba.",
+    "Termina en el freno. Lo último que queda es un permiso."
+  ],
+  asuntos:[
+    "la prueba","las ideas sin dueño","quienes escuchan","la mesa compartida",
+    "lo que no se arriesga","quien llegó antes","el rumbo","el derecho a frenar"
+  ],
+  futuros:[
+    { nombre:"Un futuro que se ensaya",
+      piensa:"el porvenir como un borrador: algo que se corrige con gente real delante.",
+      construye:"versiones pequeñas que salen pronto y vuelven con noticias.",
+      anticipa:"los defectos cuando todavía cuestan poco, a tres equipos de distancia del lanzamiento." },
+    { nombre:"Un futuro con lugar libre",
+      piensa:"el porvenir como una habitación sin amueblar: algo va a llegar y conviene tenerle sitio.",
+      construye:"margen, recursos sin etiqueta, permiso para proponer lo que no estaba en el plan.",
+      anticipa:"la idea que hoy nadie puede defender con cifras y le guarda un asiento." },
+    { nombre:"Un futuro que se oye en el mostrador",
+      piensa:"el porvenir como algo que ya se está diciendo en voz baja, lejos de los informes.",
+      construye:"caminos por los que una frase oída en la sucursal llega hasta quien decide.",
+      anticipa:"lo que el cliente va a pedir, porque alguien lo escuchó antes de que lo pidiera." },
+    { nombre:"Un futuro entre varios",
+      piensa:"el porvenir como un problema que ningún área resuelve sola.",
+      construye:"vecindad: gente que aprende el idioma de la oficina de al lado.",
+      anticipa:"los choques entre áreas cuando todavía son una conversación de pasillo." },
+    { nombre:"Un futuro con suelo firme",
+      piensa:"el porvenir desde lo que no puede romperse: hay una frontera y todos saben dónde queda.",
+      construye:"resguardos, pruebas con red, cambios que no tocan lo que otros dejaron a su cuidado.",
+      anticipa:"el daño que puede causar un entusiasmo y traza la línea antes de empezar." },
+    { nombre:"Un futuro que mira al lado",
+      piensa:"el porvenir como una carrera que ya empezó y en la que alguien lleva ventaja.",
+      construye:"con referencias: lo que otro ya probó ahorra meses de tanteo.",
+      anticipa:"el siguiente movimiento ajeno y deja de sorprenderse cuando ocurre." },
+    { nombre:"Un futuro con norte",
+      piensa:"el porvenir como un punto fijo en el mapa: cinco años caben en una sola frase.",
+      construye:"alineación, proyectos que se suman porque apuntan hacia el mismo lugar.",
+      anticipa:"las distracciones, todo lo que brilla y no acerca al destino." },
+    { nombre:"Un futuro con freno de mano",
+      piensa:"el porvenir como algo que cualquiera puede cuidar, sin importar el cargo.",
+      construye:"equipos en los que decir «paremos» no le cuesta a nadie la carrera.",
+      anticipa:"el riesgo que solo una persona alcanzó a ver, y le da el poder de actuar." }
+  ],
+  practicas:[
+    "Saquen hoy algo a medio hacer y muéstrenselo a una persona que lo vaya a usar.",
+    "Guarden diez minutos al día para una propuesta que no responde a ningún encargo.",
+    "Pregúntenle a quien atiende clientes qué oyó hoy que no cabe en ningún formulario.",
+    "Inviten cada día a alguien de otra área a opinar sobre un problema que creían propio.",
+    "Antes de empezar algo nuevo, digan en una frase qué cosa no puede salir lastimada.",
+    "Miren cada día una cosa que alguien más ya resolvió y pregúntense qué aprendió por ustedes.",
+    "Al abrir la jornada, digan en una frase hacia dónde va el equipo y revisen si la tarea de hoy acerca.",
+    "Pregunten una vez al día: ¿alguien ve algo que los demás no estamos viendo?"
+  ]
 }
+];
 
-/* ── Logogramas ──────────────────────────────── */
+const ENCARGO = {
+  primero:{
+    eyebrow:"Transmisión recibida",
+    h:"Ocho fragmentos.<br>Ninguno perdido.",
+    p:["Llegó un comunicado que la Dirección General necesita transmitir a toda la organización.",
+       "Durante la transmisión algo falló: el mensaje llegó sin orden. Están los ocho fragmentos completos, sin repeticiones.",
+       "<em>Su tarea es reconstruirlo y transmitirlo.</em>"]
+  },
+  otro:{
+    eyebrow:"Nueva transmisión",
+    h:"Otro comunicado.<br>Otros ocho fragmentos.",
+    p:["La Dirección General envió un mensaje distinto. Los ocho fragmentos están completos, sin repeticiones.",
+       "Ya saben que el orden lo ponen ustedes.",
+       "<em>Decidan qué quieren que se oiga primero.</em>"]
+  },
+  rearmar:{
+    eyebrow:"El mismo comunicado",
+    h:"Los mismos ocho,<br>en otro lugar.",
+    p:["Los fragmentos volvieron al anillo y cambiaron de sitio. Dicen lo mismo que antes.",
+       "Ya saben que el orden lo ponen ustedes.",
+       "<em>Armen esta vez el mensaje que quieren que llegue.</em>"]
+  }
+};
+
+const POS_LABEL = ["Quedó al final","Quedó casi al final","Quedó al otro lado del anillo"];
+const VERBS = [["piensa","Piensa"],["construye","Construye"],["anticipa","Anticipa"]];
+
+/* ── Utilidades ──────────────────────────────── */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const firstWords = (t,n) => { const w=t.split(' '); return w.length<=n ? t : w.slice(0,n).join(' ').replace(/[,:;.]$/,'')+'…'; };
+const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const store = {
+  get(k){ try{ const v=localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
 function rng(seed){
   let a = seed>>>0;
   return function(){
@@ -496,196 +832,899 @@ const P = (cx,cy,r,deg)=>{
   const a = (deg-90)*Math.PI/180;
   return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
 };
+const f2 = n => n.toFixed(2);
 
-function logogram(seed){
+/* ── Logogramas ──────────────────────────────── */
+// Cada logograma es una lista de trazos. La misma lista se pinta en SVG (pantalla) y en canvas (descarga).
+function logoPrims(seed){
   const r = rng(seed*977 + 13);
-  const cx=50, cy=50, R=32;
-  let s = `<g class="lgw" filter="url(#wobble)">`;
-  s += `<circle class="lg" cx="${cx}" cy="${cy}" r="${R}" stroke-width="${(2.6+r()*1.4).toFixed(2)}"/>`;
-
-  // arcos gruesos sobre el anillo
+  const cx=50, cy=50, R=32, out=[];
+  out.push({t:'c',cx,cy,r:R,w:2.6+r()*1.4});
   const arcs = 1 + Math.floor(r()*2);
   for(let i=0;i<arcs;i++){
-    const a1 = r()*360, span = 34 + r()*76, a2 = a1 + span;
-    const [x1,y1]=P(cx,cy,R,a1), [x2,y2]=P(cx,cy,R,a2);
-    s += `<path class="lg" d="M${x1.toFixed(2)} ${y1.toFixed(2)} A${R} ${R} 0 ${span>180?1:0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}" stroke-width="${(5.2+r()*2.6).toFixed(2)}"/>`;
+    const a1 = r()*360, span = 34 + r()*76;
+    out.push({t:'a',cx,cy,r:R,a1,a2:a1+span,w:5.2+r()*2.6});
   }
-  // púas radiales
   const ticks = 2 + Math.floor(r()*4);
   for(let i=0;i<ticks;i++){
-    const a = r()*360, out = R + 5 + r()*8;
-    const [x1,y1]=P(cx,cy,R-1,a), [x2,y2]=P(cx,cy,out,a);
-    s += `<path class="lg" d="M${x1.toFixed(2)} ${y1.toFixed(2)} L${x2.toFixed(2)} ${y2.toFixed(2)}" stroke-width="${(1.8+r()*1.4).toFixed(2)}"/>`;
+    const a = r()*360, o = R + 5 + r()*8;
+    const [x1,y1]=P(cx,cy,R-1,a), [x2,y2]=P(cx,cy,o,a);
+    out.push({t:'l',x1,y1,x2,y2,w:1.8+r()*1.4});
   }
-  // ganchos exteriores
   const hooks = 1 + Math.floor(r()*3);
   for(let i=0;i<hooks;i++){
     const a = r()*360, rr = 5 + r()*6;
     const [hx,hy]=P(cx,cy,R+rr*0.7,a);
-    s += `<circle class="lg" cx="${hx.toFixed(2)}" cy="${hy.toFixed(2)}" r="${rr.toFixed(2)}" stroke-width="${(1.6+r()*1.1).toFixed(2)}"/>`;
+    out.push({t:'c',cx:hx,cy:hy,r:rr,w:1.6+r()*1.1});
   }
-  // puntos sueltos
   const dots = Math.floor(r()*3);
   for(let i=0;i<dots;i++){
     const a = r()*360, rad = R + 8 + r()*6;
     const [dx,dy]=P(cx,cy,rad,a);
-    s += `<circle class="lgf" cx="${dx.toFixed(2)}" cy="${dy.toFixed(2)}" r="${(1.3+r()*1.5).toFixed(2)}"/>`;
+    out.push({t:'d',cx:dx,cy:dy,r:1.3+r()*1.5});
   }
-  // cuerda interior
   if(r()>0.4){
     const a1=r()*360, a2=a1+90+r()*120;
     const [x1,y1]=P(cx,cy,R,a1), [x2,y2]=P(cx,cy,R,a2);
-    s += `<path class="lg" d="M${x1.toFixed(2)} ${y1.toFixed(2)} L${x2.toFixed(2)} ${y2.toFixed(2)}" stroke-width="${(1.4+r()*1).toFixed(2)}"/>`;
-  }
-  return s + `</g>`;
-}
-
-/* ── Construir el anillo ─────────────────────── */
-const ring = $('ring');
-const marks = [];
-FRAGMENTS.forEach((_,i)=>{
-  const ang = (i/8)*360;
-  const [px,py] = P(50,50,36,ang);
-  const b = document.createElement('button');
-  b.className = 'mark';
-  b.style.left = px+'%';
-  b.style.top  = py+'%';
-  b.setAttribute('aria-label','Fragmento '+(i+1));
-  b.innerHTML = `<span class="halo"></span><svg viewBox="0 0 100 100">${logogram(i+1)}</svg><span class="tick">${String(i+1).padStart(2,'0')}</span>`;
-  b.addEventListener('click',()=>openFragment(i));
-  ring.appendChild(b);
-  marks.push(b);
-});
-
-function openFragment(i){
-  state.entry = i;
-  state.opened.add(i);
-  marks.forEach((m,k)=>{
-    m.classList.toggle('active', k===i);
-    if(state.opened.has(k)) m.classList.add('read');
-  });
-  $('reader').innerHTML =
-    `<p class="frag"><span class="frag-n">Fragmento ${String(i+1).padStart(2,'0')}</span>${FRAGMENTS[i]}</p>`;
-  $('prog').textContent = `${state.opened.size} de 8 fragmentos leídos`;
-  $('ringMsg').innerHTML = 'Fragmento<br>' + String(i+1).padStart(2,'0');
-  $('go2').disabled = false;
-}
-
-/* ── Ensamblaje ──────────────────────────────── */
-function sequence(entry, dir){
-  const out = [];
-  for(let k=0;k<8;k++){
-    out.push(((entry + dir*k) % 8 + 8) % 8);
+    out.push({t:'l',x1,y1,x2,y2,w:1.4+r()*1});
   }
   return out;
 }
 
-function buildDoc(entry, dir){
-  const seq = sequence(entry, dir);
+const ICONS = {
+  piensa:[{t:'c',cx:50,cy:50,r:27,w:4},{t:'d',cx:50,cy:50,r:7},{t:'a',cx:50,cy:50,r:42,a1:305,a2:55,w:4}],
+  construye:[{t:'l',x1:14,y1:80,x2:86,y2:80,w:4},{t:'l',x1:30,y1:60,x2:86,y2:60,w:4},{t:'l',x1:46,y1:40,x2:86,y2:40,w:4},{t:'l',x1:62,y1:20,x2:86,y2:20,w:4}],
+  anticipa:[{t:'a',cx:40,cy:62,r:27,a1:270,a2:90,w:4},{t:'l',x1:6,y1:62,x2:94,y2:62,w:4},{t:'d',cx:85,cy:28,r:6}]
+};
+
+const span360 = q => (((q.a2-q.a1)%360)+360)%360;
+
+function primsSVG(prims, color){
+  const c = color || 'currentColor';
+  return prims.map(q=>{
+    if(q.t==='c') return `<circle cx="${f2(q.cx)}" cy="${f2(q.cy)}" r="${f2(q.r)}" fill="none" stroke="${c}" stroke-width="${f2(q.w)}"/>`;
+    if(q.t==='a'){
+      const [x1,y1]=P(q.cx,q.cy,q.r,q.a1), [x2,y2]=P(q.cx,q.cy,q.r,q.a2);
+      return `<path d="M${f2(x1)} ${f2(y1)} A${q.r} ${q.r} 0 ${span360(q)>180?1:0} 1 ${f2(x2)} ${f2(y2)}" fill="none" stroke="${c}" stroke-width="${f2(q.w)}" stroke-linecap="round"/>`;
+    }
+    if(q.t==='l') return `<path d="M${f2(q.x1)} ${f2(q.y1)} L${f2(q.x2)} ${f2(q.y2)}" fill="none" stroke="${c}" stroke-width="${f2(q.w)}" stroke-linecap="round"/>`;
+    return `<circle cx="${f2(q.cx)}" cy="${f2(q.cy)}" r="${f2(q.r)}" fill="${c}"/>`;
+  }).join('');
+}
+
+function primsCanvas(ctx, prims, x, y, size, color, alpha){
+  ctx.save();
+  ctx.translate(x - size/2, y - size/2);
+  ctx.scale(size/100, size/100);
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round';
+  ctx.globalAlpha = alpha==null ? 1 : alpha;
+  prims.forEach(q=>{
+    ctx.beginPath();
+    if(q.t==='c'){ ctx.lineWidth=q.w; ctx.arc(q.cx,q.cy,q.r,0,Math.PI*2); ctx.stroke(); }
+    else if(q.t==='a'){
+      const s=(q.a1-90)*Math.PI/180;
+      ctx.lineWidth=q.w; ctx.arc(q.cx,q.cy,q.r,s,s+span360(q)*Math.PI/180); ctx.stroke();
+    }
+    else if(q.t==='l'){ ctx.lineWidth=q.w; ctx.moveTo(q.x1,q.y1); ctx.lineTo(q.x2,q.y2); ctx.stroke(); }
+    else { ctx.arc(q.cx,q.cy,q.r,0,Math.PI*2); ctx.fill(); }
+  });
+  ctx.restore();
+}
+
+const LOGOS = MESSAGES.map(M => M.fragments.map((_,i)=>logoPrims(M.seed+i)));
+
+function glyph(mi, f){
+  return `<svg class="g" viewBox="-6 -6 112 112" aria-hidden="true"><g filter="url(#wobble)">${primsSVG(LOGOS[mi][f])}</g></svg>`;
+}
+function icon(name){
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g filter="url(#wobble)">${primsSVG(ICONS[name],'#0C0E0D')}</g></svg>`;
+}
+
+/* ── Disposición del anillo ──────────────────── */
+// order[p] = fragmento que ocupa la posición p (p=0 arriba, en el sentido del reloj).
+function newOrder(prev){
+  let o = [0,1,2,3,4,5,6,7];
+  for(let t=0;t<300;t++){
+    if(LAYOUT_MODE==='libre'){
+      o = [0,1,2,3,4,5,6,7];
+      for(let i=7;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const x=o[i]; o[i]=o[j]; o[j]=x; }
+    }else{
+      const rot=Math.floor(Math.random()*8), flip=Math.random()<.5;
+      o = [];
+      for(let p=0;p<8;p++) o.push(flip ? ((rot-p)%8+8)%8 : (p+rot)%8);
+    }
+    if(!prev || o.every((x,i)=>x!==prev[i])) return o;   // nadie repite lugar
+  }
+  return o;
+}
+
+/* ── Ensamblaje ──────────────────────────────── */
+// El mecanismo no cambió: una entrada, un sentido, ocho fragmentos en fila.
+function seqFrom(order, entry, dir){
+  const p0 = order.indexOf(entry), out = [];
+  for(let k=0;k<8;k++) out.push(order[((p0 + dir*k) % 8 + 8) % 8]);
+  return out;
+}
+const keyOf = seq => seq.join('');
+
+function buildDoc(mi, seq, withTitle, reveal){
+  const M = MESSAGES[mi];
   const groups = [seq.slice(0,3), seq.slice(3,6), seq.slice(6,8)];
-  const paras = groups.map(g=>'<p>'+g.map(i=>FRAGMENTS[i]).join(' ')+'</p>').join('');
+  const paras = groups.map(g=>'<p>'+g.map(i=>M.fragments[i]).join(' ')+'</p>').join('');
+  const title = withTitle ? `<p class="doc-title${reveal?' reveal':''}">${M.titles[seq[0]]}</p>` : '';
   return `<div class="doc">
     <div class="doc-head"><span>Comunicado interno</span><span>Dirección General</span></div>
-    <p class="doc-title">${TITLES[entry]}</p>
-    ${paras}
+    ${title}${paras}
   </div>`;
 }
-
-function buildNotes(entry, dir){
-  const seq = sequence(entry, dir);
-  const last = seq[7];
-  return `<p>${OPENINGS[entry]}</p><p>${CLOSINGS[last]}</p>`;
+function buildNotes(mi, seq){
+  const M = MESSAGES[mi];
+  return `<p>${M.openings[seq[0]]}</p><p>${M.closings[seq[7]]}</p>`;
 }
 
+/* ── Estado ──────────────────────────────────── */
+function freshState(){
+  return {
+    v:2, view:'intro', team:'', msg:0, mode:'primero',
+    order:newOrder(null), opened:[], open:null, entry:null, dir:null,
+    discards:[], runs:0, runId:Date.now(), logged:false, back:'intro', ts:Date.now()
+  };
+}
+function validState(s){
+  return s && s.v===2 && Array.isArray(s.order) && s.order.length===8 &&
+    [0,1,2,3,4,5,6,7].every(i=>s.order.includes(i)) &&
+    s.msg>=0 && s.msg<MESSAGES.length && Array.isArray(s.opened) && Array.isArray(s.discards) &&
+    (Date.now() - (s.ts||0)) < MAX_AGE;
+}
+
+let hist = store.get(KEY_H);
+if(!Array.isArray(hist)) hist = [];
+
+let state = store.get(KEY_S);
+if(!validState(state)) state = freshState();
+const NEEDS_READING = ['mensaje','resultado','futuro','lecturas','cierre'];
+if(state.view==='direccion' && state.dir!==null) state.view = 'mensaje';
+if(NEEDS_READING.includes(state.view) && (state.entry===null || state.dir===null)) state.view = 'intro';
+if(state.view==='direccion' && state.entry===null) state.view = 'anillo';
+if(state.view==='historial' && state.back==='historial') state.back = 'intro';
+
+function save(){ state.ts = Date.now(); store.set(KEY_S, state); }
+const msg = () => MESSAGES[state.msg];
+const posOf = f => state.order.indexOf(f);
+const currentSeq = () => seqFrom(state.order, state.entry, state.dir);
+
 /* ── Navegación ──────────────────────────────── */
+const SECTION = { intro:'s0', encargo:'s1', anillo:'sR', direccion:'sR', mensaje:'s4',
+                  resultado:'s5', futuro:'sF', lecturas:'s6', cierre:'s7', historial:'sH' };
+let armed = false;
+
+function arm(){ try{ history.pushState({mc:1},''); armed = true; }catch(e){} }
+
+function go(view){
+  stopChain();
+  state.view = view;
+  save();
+  if(!armed) arm();
+  render();
+}
+
+function render(){
+  const id = SECTION[state.view];
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id===id));
+  RENDER[state.view]();
+  window.scrollTo(0,0);
+}
+
+// El botón atrás del teléfono recorre la app en lugar de sacarlos de ella.
+function logicalBack(){
+  switch(state.view){
+    case 'intro':     return false;
+    case 'encargo':   if(state.runs===0){ go('intro'); } return true;
+    case 'anillo':    go('encargo'); return true;
+    case 'direccion': state.dir=null; go('anillo'); return true;
+    case 'mensaje':   reelegir(); return true;
+    case 'resultado': return true;                 // lo transmitido ya salió
+    case 'futuro':    go('resultado'); return true;
+    case 'lecturas':  go('futuro'); return true;
+    case 'cierre':    go('lecturas'); return true;
+    case 'historial': go(state.back||'intro'); return true;
+  }
+  return false;
+}
+try{
+  history.replaceState({mc:0},'');
+  arm();
+  window.addEventListener('popstate',()=>{
+    armed = false;
+    if(logicalBack() && !armed) arm();
+  });
+}catch(e){}
+
+/* ── 0 · Entrada ─────────────────────────────── */
+function histLabel(){ return 'Mensajes transmitidos' + (hist.length ? ' · ' + hist.length : ''); }
+
+function renderIntro(){
+  $('team').value = state.team || '';
+  $('hist0').hidden = hist.length===0;
+  $('hist0').textContent = histLabel();
+}
 $('go0').addEventListener('click',()=>{
-  const v = $('team').value.trim();
-  state.team = v || 'Equipo sin nombre';
-  show('s1');
+  state.team = $('team').value.trim() || 'Equipo sin nombre';
+  go('encargo');
 });
 $('team').addEventListener('keydown',e=>{ if(e.key==='Enter') $('go0').click(); });
+$('hist0').addEventListener('click',()=>openHist());
 
-$('go1').addEventListener('click',()=>show('s2'));
+/* ── 1 · El encargo ──────────────────────────── */
+function renderEncargo(){
+  const E = ENCARGO[state.mode] || ENCARGO.primero;
+  $('e1').textContent = E.eyebrow;
+  $('h1x').innerHTML = E.h;
+  $('l1').innerHTML = E.p.map(t=>`<p class="lede">${t}</p>`).join('');
+}
+$('go1').addEventListener('click',()=>go('anillo'));
 
-$('go2').addEventListener('click',()=>{
-  if(state.entry===null) return;
-  $('entryEcho').textContent =
-    'Empieza en el fragmento ' + String(state.entry+1).padStart(2,'0') + ': “' + FRAGMENTS[state.entry] + '”';
-  show('s3');
+/* ── 2 y 3 · El anillo ───────────────────────── */
+const ringEl = $('ring'), ringSvg = $('ringSvg');
+let marks = [], pips = [], ringKey = null;
+
+function arcD(r, a1, a2, sweep){
+  const [x1,y1]=P(50,50,r,a1), [x2,y2]=P(50,50,r,a2);
+  return `M${f2(x1)} ${f2(y1)} A${r} ${r} 0 0 ${sweep} ${f2(x2)} ${f2(y2)}`;
+}
+
+function buildRing(){
+  ringEl.querySelectorAll('.mark,.pip').forEach(n=>n.remove());
+  marks = []; pips = [];
+  let h = '';
+  // la línea no cruza los logogramas: cada marca es dueña de los dos medios tramos que la tocan
+  const GAP = 12.5;
+  for(let p=0;p<8;p++) h += `<path class="seg" data-p="${p}" d="${arcD(36, p*45-22.5, p*45-GAP, 1)} ${arcD(36, p*45+GAP, p*45+22.5, 1)}"/>`;
+  for(let p=0;p<8;p++) h += `<path class="link" data-p="${p}" d="${arcD(36, p*45+GAP, p*45+45-GAP, 1)}"/>`;
+  ringSvg.innerHTML = h + '<g id="arrows"></g>';
+  state.order.forEach((f,p)=>{
+    const [px,py] = P(50,50,36,p*45);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mark';
+    b.dataset.f = f; b.dataset.p = p;
+    b.style.left = px+'%'; b.style.top = py+'%';
+    b.innerHTML = `<span class="halo"></span><svg viewBox="0 0 100 100" aria-hidden="true"><g filter="url(#wobble)">${primsSVG(LOGOS[state.msg][f])}</g></svg>`;
+    b.addEventListener('click',()=>onMark(f));
+    ringEl.appendChild(b);
+    marks[f] = b;
+    const [qx,qy] = P(50,50,49.5,p*45);
+    const d = document.createElement('span');
+    d.className = 'pip';
+    d.style.left = qx+'%'; d.style.top = qy+'%';
+    ringEl.appendChild(d);
+    pips[f] = d;
+  });
+  ringKey = state.msg + ':' + state.order.join('');
+}
+
+function onMark(f){
+  if(chain.active) return;
+  if(state.view==='anillo'){
+    const full = state.opened.length===8;
+    if(!state.opened.includes(f)) state.opened.push(f);
+    state.open = f;
+    if(full) state.entry = f;          // leer y elegir son gestos distintos: solo se elige con el círculo cerrado
+    save();
+    paintRing();
+  }else if(state.view==='direccion'){
+    const p0 = posOf(state.entry);
+    if(f===state.order[(p0+1)%8]) chooseDir(1);
+    else if(f===state.order[(p0+7)%8]) chooseDir(-1);
+  }
+}
+
+function readerFrag(f, label, sel){
+  return `<p class="frag"><span class="frag-n${sel?' sel':''}">${glyph(state.msg,f)}${label}</span>${msg().fragments[f]}</p>`;
+}
+
+function paintRing(){
+  const M = msg(), n = state.opened.length, full = n===8;
+  const dirPhase = state.view==='direccion';
+  const p0 = state.entry!==null ? posOf(state.entry) : -1;
+
+  ringEl.classList.toggle('full', full);
+  ringEl.classList.toggle('dirphase', dirPhase);
+  ringEl.classList.remove('chaining');
+  ringSvg.querySelectorAll('.link').forEach(l=>{ l.classList.remove('on'); l.removeAttribute('style'); });
+
+  state.order.forEach((f,p)=>{
+    const m = marks[f], read = state.opened.includes(f);
+    let c = 'mark';
+    if(read) c += ' read';
+    if(dirPhase){
+      if(f===state.entry) c += ' active';
+      else if(p===(p0+1)%8 || p===(p0+7)%8) c += ' nb';
+      else c += ' dim';
+    }else{
+      if(state.entry===f) c += ' active';
+      else if(state.open===f) c += ' open';
+    }
+    m.className = c;
+    m.setAttribute('aria-label', read ? 'Fragmento: '+firstWords(M.fragments[f],5) : 'Fragmento sin leer');
+    pips[f].classList.toggle('on', read);
+    ringSvg.querySelector('.seg[data-p="'+p+'"]').classList.toggle('read', read);
+  });
+
+  // flechas hacia las dos marcas vecinas
+  let ar = '';
+  if(dirPhase){
+    [1,-1].forEach(s=>{
+      const a1 = p0*45 + s*10, a2 = p0*45 + s*35;
+      const [tx,ty] = P(50,50,48.5,a2);
+      const ang = (a2-90)*Math.PI/180;
+      const dx = -Math.sin(ang)*s, dy = Math.cos(ang)*s;      // dirección de avance
+      const wing = t => { const c=Math.cos(t), sn=Math.sin(t); return [tx + 2.6*(-dx*c + dy*sn), ty + 2.6*(-dx*sn - dy*c)]; };
+      const [w1x,w1y] = wing(.52), [w2x,w2y] = wing(-.52);
+      ar += `<path class="arrow" d="${arcD(48.5,a1,a2,s>0?1:0)}"/><path class="arrow" d="M${f2(w1x)} ${f2(w1y)} L${f2(tx)} ${f2(ty)} L${f2(w2x)} ${f2(w2y)}"/>`;
+    });
+  }
+  $('arrows').innerHTML = ar;
+
+  $('rLede').hidden = false;
+  $('prog').hidden = dirPhase;
+  $('goEntry').hidden = dirPhase;
+  $('backEntry').hidden = !dirPhase;
+  $('skipChain').hidden = true;
+
+  if(dirPhase){
+    $('rTag').textContent = 'Paso 2 de 2';
+    $('rH').innerHTML = 'Elijan hacia qué<br>lado se lee';
+    $('rLede').textContent = 'El mensaje empieza en la marca encendida. Toquen una de sus dos vecinas: hacia ese lado sigue la lectura.';
+    $('ringMsg').innerHTML = '¿Hacia dónde<br>sigue?';
+    $('reader').innerHTML = readerFrag(state.entry, 'El mensaje empieza aquí', true);
+    return;
+  }
+
+  $('rTag').textContent = 'Paso 1 de 2';
+  $('rH').innerHTML = 'Elijan por dónde<br>empieza el mensaje';
+  if(n===0){
+    $('rLede').textContent = 'Toquen cada marca para leer su fragmento.';
+    $('ringMsg').innerHTML = 'Toquen<br>una marca';
+  }else if(!full){
+    $('rLede').textContent = 'El círculo se cierra a medida que leen. Cuando esté completo, van a elegir por cuál de los ocho fragmentos empieza el mensaje.';
+    $('ringMsg').innerHTML = n + ' de 8<br>leídos';
+  }else{
+    $('rLede').textContent = 'Ya leyeron los ocho. Toquen la marca del fragmento que va primero y confírmenlo abajo. Pueden releer los que quieran.';
+    $('ringMsg').innerHTML = state.entry===null ? 'Elijan dónde<br>empieza' : 'Punto de<br>entrada';
+  }
+  if(state.open===null){
+    $('reader').innerHTML = '<p class="empty">Ningún fragmento abierto todavía.</p>';
+  }else{
+    const sel = state.entry===state.open;
+    $('reader').innerHTML = readerFrag(state.open, sel ? 'El mensaje empieza aquí' : 'Fragmento abierto', sel);
+  }
+  $('prog').textContent = full
+    ? (state.entry===null ? 'Círculo completo · falta elegir la entrada' : 'Círculo completo')
+    : n + ' de 8 fragmentos leídos';
+  $('goEntry').disabled = !(full && state.entry!==null);
+}
+
+function renderRing(){
+  if(ringKey !== state.msg + ':' + state.order.join('')) buildRing();
+  paintRing();
+}
+
+$('goEntry').addEventListener('click',()=>{
+  if(state.entry===null || state.opened.length<8) return;
+  state.open = state.entry;
+  go('direccion');
 });
+$('backEntry').addEventListener('click',()=>{ state.dir=null; go('anillo'); });
 
-$('back3').addEventListener('click',()=>show('s2'));
+/* ── Encadenado ──────────────────────────────── */
+const chain = { active:false, timers:[] };
+
+function stopChain(){
+  chain.timers.forEach(clearTimeout);
+  chain.timers = [];
+  chain.active = false;
+}
+const later = (fn,ms) => chain.timers.push(setTimeout(fn,ms));
+
+function drawLink(fromF, toF){
+  const pa = posOf(fromF), pb = posOf(toF);
+  const forward = pb === (pa+1)%8;
+  const el = ringSvg.querySelector('.link[data-p="'+(forward?pa:pb)+'"]');
+  if(!el) return;
+  let L = 30;
+  try{ L = el.getTotalLength(); }catch(e){}
+  el.style.strokeDasharray = L;
+  el.style.strokeDashoffset = forward ? L : -L;
+  el.style.opacity = 1;
+  void el.getBoundingClientRect();
+  el.classList.add('on');
+  el.style.strokeDashoffset = 0;
+}
+
+function pushLine(f){
+  const tk = $('ticker');
+  if(!tk) return;
+  const prev = tk.querySelector('.tk.cur');
+  if(prev){
+    prev.classList.remove('cur'); prev.classList.add('out');
+    setTimeout(()=>prev.remove(), 900);
+  }
+  const el = document.createElement('p');
+  el.className = 'tk';
+  el.textContent = msg().fragments[f];
+  tk.appendChild(el);
+  void el.offsetWidth;
+  el.classList.add('cur');
+}
 
 function chooseDir(d){
   state.dir = d;
-  $('preview').innerHTML = buildDoc(state.entry, state.dir);
-  show('s4');
+  save();
+  if(reducedMotion()) return go('mensaje');
+  startChain();
 }
-$('dirF').addEventListener('click',()=>chooseDir(1));
-$('dirB').addEventListener('click',()=>chooseDir(-1));
 
-$('back4').addEventListener('click',()=>show('s3'));
+function startChain(){
+  stopChain();
+  chain.active = true;
+  const seq = currentSeq();
+  ringEl.classList.remove('dirphase');
+  ringEl.classList.add('chaining');
+  $('arrows').innerHTML = '';
+  marks.forEach(m=>{ m.className = 'mark wait'; });
+  $('rTag').textContent = 'Ensamblando';
+  $('rH').innerHTML = 'El mensaje<br>se encadena';
+  $('rLede').hidden = true;
+  $('prog').hidden = true;
+  $('backEntry').hidden = true;
+  $('goEntry').hidden = true;
+  $('skipChain').hidden = false;
+  $('reader').innerHTML = '<div class="ticker" id="ticker"></div>';
+  window.scrollTo(0,0);
 
+  seq.forEach((f,k)=>{
+    later(()=>{
+      if(k>0){
+        marks[seq[k-1]].className = 'mark done';
+        drawLink(seq[k-1], f);
+      }
+      marks[f].className = 'mark lit';
+      pushLine(f);
+      $('ringMsg').innerHTML = (k+1) + ' de 8';
+    }, 250 + k*STEP_MS);
+  });
+  // el último fragmento vuelve a tocar al primero: el círculo se cierra
+  later(()=>{
+    marks[seq[7]].className = 'mark done';
+    drawLink(seq[7], seq[0]);
+    $('ringMsg').innerHTML = 'Mensaje<br>armado';
+  }, 250 + 8*STEP_MS);
+  later(()=>go('mensaje'), 250 + 8*STEP_MS + 1500);
+}
+$('skipChain').addEventListener('click',()=>go('mensaje'));
+
+/* ── 4 · Mensaje armado ──────────────────────── */
+function renderMensaje(){
+  $('preview').innerHTML = buildDoc(state.msg, currentSeq(), false);   // todavía sin titular
+}
+function reelegir(){
+  const seq = currentSeq(), k = keyOf(seq);
+  if(!state.discards.some(s=>keyOf(s)===k)) state.discards.push(seq);   // lo que armaron y dejaron vuelve en la comparación
+  state.dir = null;
+  state.open = state.entry;
+  go('anillo');
+}
+$('back4').addEventListener('click',reelegir);
 $('go4').addEventListener('click',()=>{
-  $('badge').textContent = state.team;
-  $('result').innerHTML = buildDoc(state.entry, state.dir);
-  $('notes').innerHTML  = buildNotes(state.entry, state.dir);
-  show('s5');
+  if(!state.logged){
+    hist.unshift({ id:state.runId, team:state.team, msg:state.msg, seq:currentSeq(), order:state.order.slice(), ts:Date.now() });
+    hist = hist.slice(0,60);
+    store.set(KEY_H, hist);
+    state.logged = true;
+  }
+  const k = keyOf(currentSeq());
+  state.discards = state.discards.filter(s=>keyOf(s)!==k);
+  go('resultado');
 });
 
-function altReadings(entry, dir){
-  const n = i => String(i+1).padStart(2,'0');
-  return [
-    { entry:(entry+4)%8, dir:dir,  tag:'Si hubiera empezado en el fragmento '+n((entry+4)%8) },
-    { entry:entry,       dir:-dir, tag:'Mismo fragmento '+n(entry)+', sentido contrario' },
-    { entry:(entry+2)%8, dir:dir,  tag:'Si hubiera empezado en el fragmento '+n((entry+2)%8) },
-    { entry:(entry+6)%8, dir:-dir, tag:'Fragmento '+n((entry+6)%8)+', sentido contrario' }
-  ];
+/* ── 5 · Resultado ───────────────────────────── */
+function renderResultado(){
+  const seq = currentSeq();
+  $('badge').textContent = state.team;
+  $('result').innerHTML = buildDoc(state.msg, seq, true, true);         // aquí aparece el titular
+  $('notes').innerHTML = buildNotes(state.msg, seq);
+}
+$('go5').addEventListener('click',()=>go('futuro'));
+
+/* ── F · Tu recuerdo del futuro ──────────────── */
+// El trazo del equipo: un círculo de pincel que nace grueso en la entrada y se adelgaza hasta el cierre.
+function glyphSpec(){
+  const seq = currentSeq(), s = state.dir, p0 = posOf(state.entry);
+  const r = rng(state.msg*500 + state.entry*31 + (s>0?7:3));
+  const ph1 = r()*6.28, ph2 = r()*6.28;
+  const N = 110, sweep = 336, start = p0*45 - s*10, R = 44, wMax = 7.6, wMin = .7;
+  const outer = [], inner = [];
+  for(let i=0;i<=N;i++){
+    const t = i/N, deg = start + s*sweep*t;
+    let w = (wMin + (wMax-wMin)*Math.pow(1-t,1.3)) * (1 + .13*Math.sin(t*9+ph1) + .07*Math.sin(t*23+ph2));
+    if(t>.95) w *= (1-t)/.05;
+    outer.push(P(100,100,R+w,deg)); inner.push(P(100,100,R-w,deg));
+  }
+  const w0 = (outer[0][0]-inner[0][0])/2, h0 = (outer[0][1]-inner[0][1])/2;
+  const head = { x:(outer[0][0]+inner[0][0])/2, y:(outer[0][1]+inner[0][1])/2, r:Math.sqrt(w0*w0+h0*h0) };
+  const items = seq.map((f,k)=>{
+    const [x,y] = P(100,100,77,posOf(f)*45);
+    return { f, x, y, size:34 - k*2.5, alpha:1 - k*.082, first:k===0 };
+  });
+  return { outer, inner, head, items };
 }
 
+function glyphSVG(){
+  const G = glyphSpec();
+  const d = 'M' + G.outer.map(p=>f2(p[0])+' '+f2(p[1])).join('L') + 'L' +
+            G.inner.slice().reverse().map(p=>f2(p[0])+' '+f2(p[1])).join('L') + 'Z';
+  let h = `<g filter="url(#wobble)"><path d="${d}" fill="#0C0E0D"/><circle cx="${f2(G.head.x)}" cy="${f2(G.head.y)}" r="${f2(G.head.r)}" fill="#0C0E0D"/></g>`;
+  G.items.forEach(it=>{
+    const sc = it.size/100;
+    h += `<g transform="translate(${f2(it.x - it.size/2)} ${f2(it.y - it.size/2)}) scale(${sc.toFixed(3)})" opacity="${it.alpha.toFixed(2)}" filter="url(#wobble)">${primsSVG(LOGOS[state.msg][it.f], it.first ? '#0E8F86' : '#0C0E0D')}</g>`;
+  });
+  return `<svg viewBox="0 0 200 200" role="img" aria-label="El trazo del mensaje que transmitieron">${h}</svg>`;
+}
+
+function glyphCanvas(ctx, cx, cy, size){
+  const G = glyphSpec(), k = size/200, ox = cx - size/2, oy = cy - size/2;
+  ctx.save();
+  ctx.fillStyle = '#0C0E0D';
+  ctx.beginPath();
+  G.outer.forEach((p,i)=>{ const x=ox+p[0]*k, y=oy+p[1]*k; if(i) ctx.lineTo(x,y); else ctx.moveTo(x,y); });
+  G.inner.slice().reverse().forEach(p=>ctx.lineTo(ox+p[0]*k, oy+p[1]*k));
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.arc(ox+G.head.x*k, oy+G.head.y*k, G.head.r*k, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+  G.items.forEach(it=>{
+    primsCanvas(ctx, LOGOS[state.msg][it.f], ox+it.x*k, oy+it.y*k, it.size*k, it.first ? '#0E8F86' : '#0C0E0D', it.alpha);
+  });
+}
+
+function diagData(){
+  const M = msg(), seq = currentSeq();
+  return {
+    M, seq, F:M.futuros[seq[0]],
+    asunto:M.asuntos[seq[0]],
+    pr:[seq[7], seq[6], seq[4]].map((f,i)=>({ f, pos:POS_LABEL[i], asunto:M.asuntos[f], text:M.practicas[f] }))
+  };
+}
+
+let cardBlob = null, cardKey = '';
+
+function renderFuturo(){
+  const D = diagData();
+  $('fBadge').textContent = state.team;
+  $('fName').textContent = D.F.nombre;
+  $('fLede').textContent = 'Así se ve lo que viene desde un mensaje que empieza por ' + D.asunto + '.';
+  $('fGlyph').innerHTML = glyphSVG();
+
+  let w = '<p class="w-head">Lo que este mensaje pone adelante</p>';
+  D.seq.forEach((f,k)=>{
+    w += `<div class="w-row${k===0?' first':''}" style="opacity:${(1 - k*.07).toFixed(2)}">${glyph(state.msg,f)}<div><span>${D.M.asuntos[f]}</span><i style="width:${100 - k*10}%;height:${9 - k}px"></i></div></div>`;
+  });
+  $('fWeights').innerHTML = w + '<p class="w-foot">Lo que deja al fondo</p>';
+
+  $('fTri').innerHTML = VERBS.map(v=>`<div class="tri-item">${icon(v[0])}<b>${v[1]}</b><p>${D.F[v[0]]}</p></div>`).join('');
+  $('fPract').innerHTML = D.pr.map(p=>`<div class="pr">${glyph(state.msg,p.f)}<div><small>${p.pos} · ${p.asunto}</small><p>${p.text}</p></div></div>`).join('');
+
+  $('sh').hidden = !navigator.share;
+  // la imagen se prepara de una vez para que compartir responda al primer toque
+  const key = state.runId + ':' + keyOf(D.seq);
+  if(cardKey!==key){ cardBlob = null; cardKey = key; }
+  if(!cardBlob) makeCard().then(b=>{ if(cardKey===key) cardBlob = b; }).catch(()=>{});
+}
+
+function fileName(){
+  const slug = (state.team||'equipo').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'equipo';
+  return 'recuerdo-del-futuro-' + slug + '.png';
+}
+
+function makeCard(){
+  const fonts = (document.fonts && document.fonts.load) ? Promise.all([
+    document.fonts.load("200 92px Jost"), document.fonts.load("400 22px Jost"), document.fonts.load("500 20px Jost"),
+    document.fonts.load("300 38px Newsreader"), document.fonts.load("italic 300 36px Newsreader")
+  ]).catch(()=>{}) : Promise.resolve();
+  const wait = new Promise(res=>setTimeout(res,1800));
+  return Promise.race([fonts, wait]).then(()=>new Promise((res,rej)=>{
+    try{
+      const cv = drawCard();
+      cv.toBlob(b=>b ? res(b) : rej(new Error('sin imagen')), 'image/png');
+    }catch(e){ rej(e); }
+  }));
+}
+
+function drawCard(){
+  const D = diagData();
+  const W = 1080, X = 90, IW = W - 2*X;
+  const SANS = "Jost, 'Helvetica Neue', Arial, sans-serif", SERIF = "Newsreader, Georgia, serif";
+  const INK='#0C0E0D', I80='rgba(12,14,13,.80)', I55='rgba(12,14,13,.55)', I35='rgba(12,14,13,.38)', I15='rgba(12,14,13,.15)', SIG='#0E8F86';
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = 300;
+
+  function pass(ctx, draw){
+    let y = 0;
+    const spacedW = (txt,font,sp)=>{ ctx.font=font; let w=0; for(const ch of txt) w += ctx.measureText(ch).width + sp; return w; };
+    const spaced = (txt,x,font,color,sp)=>{
+      ctx.font = font; ctx.fillStyle = color;
+      let cx = x;
+      for(const ch of txt){ if(draw) ctx.fillText(ch,cx,y); cx += ctx.measureText(ch).width + sp; }
+    };
+    const para = (txt,x,maxW,font,color,lh)=>{
+      ctx.font = font; ctx.fillStyle = color;
+      let line = '';
+      const lines = [];
+      txt.split(' ').forEach(w=>{
+        const t = line ? line+' '+w : w;
+        if(ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t;
+      });
+      if(line) lines.push(line);
+      lines.forEach((l,i)=>{ if(draw) ctx.fillText(l,x,y); if(i<lines.length-1) y += lh; });
+    };
+    const rule = ()=>{ if(draw){ ctx.fillStyle = I15; ctx.fillRect(X,y,IW,2); } };
+
+    y = 124;  spaced('TU RECUERDO DEL FUTURO', X, `400 22px ${SANS}`, I35, 9);
+    y += 46;  spaced(state.team.toUpperCase(), X, `400 20px ${SANS}`, I55, 6);
+    y += 124; para(D.F.nombre, X, IW, `200 92px ${SANS}`, INK, 98);
+    y += 72;  para('Así se ve lo que viene desde un mensaje que empieza por ' + D.asunto + '.', X, IW, `italic 300 36px ${SERIF}`, I80, 50);
+
+    const GS = 640;
+    y += 40;
+    if(draw) glyphCanvas(ctx, W/2, y + GS/2, GS);
+    y += GS + 70;
+
+    spaced('UN EQUIPO QUE PONE ESTO PRIMERO', X, `400 20px ${SANS}`, I35, 7);
+    y += 70;
+    VERBS.forEach(v=>{
+      spaced(v[1].toUpperCase(), X, `500 20px ${SANS}`, SIG, 8);
+      y += 52; para(D.F[v[0]], X, IW, `300 38px ${SERIF}`, I80, 52);
+      y += 74;
+    });
+
+    y -= 14; rule();
+    y += 76; spaced('TRES PRÁCTICAS DIARIAS PARA EQUILIBRAR', X, `500 20px ${SANS}`, SIG, 7);
+    y += 78;
+    D.pr.forEach(p=>{
+      if(draw) primsCanvas(ctx, LOGOS[state.msg][p.f], X+44, y+34, 86, INK, 1);
+      const tx = X + 124, tw = IW - 124, f = `400 18px ${SANS}`;
+      const label = (p.pos + ' · ' + p.asunto).toUpperCase();
+      if(spacedW(label, f, 4) <= tw){ spaced(label, tx, f, I55, 4); }
+      else { spaced(p.pos.toUpperCase(), tx, f, I55, 4); y += 30; spaced(p.asunto.toUpperCase(), tx, f, I55, 4); }
+      y += 48; para(p.text, tx, tw, `300 34px ${SERIF}`, I80, 46);
+      y += 76;
+    });
+
+    y -= 18; rule();
+    y += 66; para(D.M.titles[D.seq[0]], X, IW, `italic 300 30px ${SERIF}`, I55, 42);
+    y += 52; spaced('LIDERAZGO EN ESCENA · EL MENSAJE CIRCULAR', X, `400 18px ${SANS}`, I35, 6);
+    return y + 96;
+  }
+
+  const H = Math.ceil(pass(cv.getContext('2d'), false));
+  cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#DDE1DA'; ctx.fillRect(0,0,W,H);
+  const g = ctx.createRadialGradient(W/2, H*.3, 0, W/2, H*.3, W*1.1);
+  g.addColorStop(0,'#EFF1EC'); g.addColorStop(1,'rgba(239,241,236,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.textBaseline = 'alphabetic';
+  pass(ctx, true);
+  return cv;
+}
+
+function downloadBlob(b){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = fileName();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+}
+$('dl').addEventListener('click',()=>{
+  if(cardBlob) return downloadBlob(cardBlob);
+  makeCard().then(b=>{ cardBlob = b; downloadBlob(b); }).catch(()=>{});
+});
+$('sh').addEventListener('click',()=>{
+  const send = b=>{
+    let file = null;
+    try{ file = new File([b], fileName(), {type:'image/png'}); }catch(e){}
+    const D = diagData();
+    const text = D.F.nombre + '. ' + D.M.titles[D.seq[0]];
+    let pr;
+    if(file && navigator.canShare && navigator.canShare({files:[file]})) pr = navigator.share({files:[file], title:'Tu recuerdo del futuro', text});
+    else if(navigator.share) pr = navigator.share({title:'Tu recuerdo del futuro', text});
+    else return downloadBlob(b);
+    pr.catch(e=>{ if(!e || e.name!=='AbortError') downloadBlob(b); });
+  };
+  if(cardBlob) return send(cardBlob);
+  makeCard().then(b=>{ cardBlob = b; send(b); }).catch(()=>{});
+});
+$('goF').addEventListener('click',()=>go('lecturas'));
+
+/* ── 6 · Dos lecturas ────────────────────────── */
 let alts = [], altIx = 0;
+
+function buildAlts(){
+  const own = currentSeq(), ownK = keyOf(own);
+  const list = [], o = state.order, p0 = posOf(own[0]), d = state.dir;
+  const find = k => list.find(a=>keyOf(a.seq)===k);
+  const add = (seq, tag) => { const k = keyOf(seq); if(k===ownK || find(k)) return; list.push({seq, tag}); };
+
+  // 1 · lo que el propio equipo armó y dejó
+  state.discards.forEach(s=>add(s, 'Una lectura que ustedes armaron y dejaron'));
+  // 2 · las cuatro lecturas calculadas, en el orden de siempre
+  add(seqFrom(o, o[(p0+4)%8],  d), 'Si el mensaje empezara por esta marca');
+  add(seqFrom(o, own[0],      -d), 'La misma marca de entrada, hacia el otro lado');
+  add(seqFrom(o, o[(p0+2)%8],  d), 'Si el mensaje empezara por esta marca');
+  add(seqFrom(o, o[(p0+6)%8], -d), 'Otra marca de entrada, hacia el otro lado');
+  // 3 · lo que otros equipos transmitieron desde este mismo teléfono
+  hist.filter(h=>h.msg===state.msg && h.id!==state.runId).slice(0,6).forEach(h=>{
+    const tag = h.team===state.team ? 'Una lectura anterior de este equipo' : 'La lectura de ' + h.team;
+    const k = keyOf(h.seq), ex = find(k);
+    if(k===ownK) return;
+    if(ex){ if(!ex.real && ex.tag.indexOf('ustedes')<0){ ex.tag = tag; ex.real = true; } }
+    else list.push({seq:h.seq, tag, real:true});
+  });
+  return list;
+}
 
 function paintOther(){
   const a = alts[altIx];
   const col = $('colOther');
   col.innerHTML =
-    `<p class="col-tag">${a.tag}</p>
-     ${buildDoc(a.entry, a.dir)}
-     <div class="notes">${buildNotes(a.entry, a.dir)}</div>`;
+    `<p class="col-tag">${glyph(state.msg, a.seq[0])}${esc(a.tag)}</p>
+     ${buildDoc(state.msg, a.seq, true)}
+     <div class="notes">${buildNotes(state.msg, a.seq)}</div>`;
   col.style.animation = 'none';
   void col.offsetWidth;
   col.style.animation = '';
   $('cycleTag').textContent = `Lectura ${altIx+1} de ${alts.length}`;
 }
 
-$('go5').addEventListener('click',()=>{
+function renderLecturas(){
+  const seq = currentSeq();
   $('colMine').innerHTML =
-    `<p class="col-tag mine">La lectura de ${state.team}</p>
-     ${buildDoc(state.entry, state.dir)}
-     <div class="notes">${buildNotes(state.entry, state.dir)}</div>`;
-  alts = altReadings(state.entry, state.dir);
+    `<p class="col-tag mine">${glyph(state.msg, seq[0])}La lectura de ${esc(state.team)}</p>
+     ${buildDoc(state.msg, seq, true)}
+     <div class="notes">${buildNotes(state.msg, seq)}</div>`;
+  alts = buildAlts();
   altIx = 0;
   paintOther();
-  show('s6');
-});
+  $('picker').hidden = true;
+  $('pickToggle').hidden = LAYOUT_MODE!=='giro';
+  $('pickToggle').textContent = 'Traer la lectura de otra mesa';
+}
 
 $('nextRead').addEventListener('click',()=>{
   altIx = (altIx + 1) % alts.length;
   paintOther();
 });
 
-$('go6').addEventListener('click',()=>show('s7'));
-
-$('reset').addEventListener('click',()=>{
-  state.entry=null; state.dir=null; state.opened.clear(); state.team='';
-  $('team').value='';
-  marks.forEach(m=>m.classList.remove('active','read','dim'));
-  $('reader').innerHTML = '<p class="empty">Ningún fragmento abierto todavía.</p>';
-  $('prog').textContent = '0 de 8 fragmentos leídos';
-  $('ringMsg').innerHTML = 'Toquen<br>una marca';
-  $('go2').disabled = true;
-  show('s0');
+// Otra mesa dice con qué fragmento abrió y cuál puso después: con eso basta para traer su lectura.
+function renderPicker(sel, note){
+  const M = msg();
+  let h = '<p class="hint">Pregunten en otra mesa con qué fragmento abrieron y cuál pusieron después. Búsquenlos aquí.</p>';
+  h += '<p class="pk-q">¿Con cuál abrieron?</p><div class="pk-grid">';
+  state.order.forEach(f=>{
+    h += `<button type="button" data-pk="${f}" class="${sel===f?'sel':''}" aria-label="${esc(firstWords(M.fragments[f],5))}"><svg viewBox="-6 -6 112 112" aria-hidden="true"><g filter="url(#wobble)">${primsSVG(LOGOS[state.msg][f])}</g></svg></button>`;
+  });
+  h += '</div>';
+  if(sel!==null){
+    const p = posOf(sel);
+    h += `<p class="pk-frag">${M.fragments[sel]}</p><p class="pk-q">¿Cuál venía después?</p><div class="pk-next">`;
+    [1,-1].forEach(s=>{
+      const nb = state.order[((p+s)%8+8)%8];
+      h += `<button type="button" data-next="${s}">${glyph(state.msg,nb)}<span>${M.fragments[nb]}</span></button>`;
+    });
+    h += '</div>';
+  }
+  if(note) h += `<p class="pk-note">${note}</p>`;
+  const el = $('picker');
+  el.innerHTML = h;
+  el.querySelectorAll('[data-pk]').forEach(b=>b.addEventListener('click',()=>renderPicker(+b.dataset.pk)));
+  el.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
+    const seq = seqFrom(state.order, sel, +b.dataset.next), k = keyOf(seq);
+    if(k===keyOf(currentSeq())) return renderPicker(sel, 'Esa mesa armó el mismo mensaje que ustedes.');
+    let ix = alts.findIndex(a=>keyOf(a.seq)===k);
+    if(ix<0){ alts.push({seq, tag:'Una lectura traída de otra mesa'}); ix = alts.length-1; }
+    else if(!alts[ix].real && alts[ix].tag.indexOf('ustedes')<0) alts[ix].tag = 'Una lectura traída de otra mesa';
+    altIx = ix;
+    paintOther();
+    el.hidden = true;
+    $('pickToggle').textContent = 'Traer la lectura de otra mesa';
+    $('colOther').scrollIntoView({block:'start', behavior: reducedMotion() ? 'auto' : 'smooth'});
+  }));
+}
+$('pickToggle').addEventListener('click',()=>{
+  const el = $('picker');
+  if(el.hidden){ renderPicker(null); el.hidden = false; $('pickToggle').textContent = 'Cerrar'; }
+  else { el.hidden = true; $('pickToggle').textContent = 'Traer la lectura de otra mesa'; }
 });
+$('go6').addEventListener('click',()=>go('cierre'));
+
+/* ── 7 · Cierre ──────────────────────────────── */
+function renderCierre(){
+  $('otherMsg').hidden = MESSAGES.length<2;
+  $('hist7').textContent = histLabel();
+}
+
+// Otra vuelta con el mismo equipo: mismo mensaje u otro, y el anillo en lugares nuevos.
+function newRun(mode){
+  const prev = state.order;
+  if(mode==='otro') state.msg = (state.msg+1) % MESSAGES.length;
+  state.mode = mode;
+  state.runs += 1;
+  state.order = newOrder(prev);
+  state.opened = []; state.open = null; state.entry = null; state.dir = null;
+  state.discards = []; state.logged = false; state.runId = Date.now();
+  go('encargo');
+}
+$('otherMsg').addEventListener('click',()=>newRun('otro'));
+$('rearm').addEventListener('click',()=>newRun('rearmar'));
+$('hist7').addEventListener('click',()=>openHist());
+$('reset').addEventListener('click',()=>{
+  const prev = state.order;
+  state = freshState();
+  state.order = newOrder(prev);
+  go('intro');
+});
+
+/* ── H · Historial ───────────────────────────── */
+function openHist(){
+  if(state.view!=='historial') state.back = state.view;
+  go('historial');
+}
+function when(ts){
+  const d = new Date(ts), now = new Date();
+  const hm = d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  return d.toDateString()===now.toDateString() ? hm : d.toLocaleDateString('es-CO',{day:'numeric',month:'short'}) + ' · ' + hm;
+}
+function renderHist(){
+  clearArmed = false;
+  $('histClear').textContent = 'Borrar el historial';
+  $('histClear').hidden = hist.length===0;
+  const el = $('hList');
+  if(!hist.length){ el.innerHTML = '<p class="h-empty">Todavía no se ha transmitido ningún mensaje desde este dispositivo.</p>'; return; }
+  el.innerHTML = hist.map((h,i)=>{
+    const M = MESSAGES[h.msg];
+    if(!M || !Array.isArray(h.seq) || h.seq.length!==8) return '';
+    return `<article class="h-item">
+      <button type="button" class="h-head" aria-expanded="false" data-h="${i}">
+        ${glyph(h.msg, h.seq[0])}
+        <span><span class="h-team">${esc(h.team)}</span><span class="h-when">${M.label} · ${when(h.ts)}</span><span class="h-title">${M.titles[h.seq[0]]}</span></span>
+      </button>
+      <div class="h-body" hidden>${buildDoc(h.msg, h.seq, true)}<div class="notes">${buildNotes(h.msg, h.seq)}</div></div>
+    </article>`;
+  }).join('');
+  el.querySelectorAll('.h-head').forEach(b=>b.addEventListener('click',()=>{
+    const body = b.nextElementSibling;
+    body.hidden = !body.hidden;
+    b.setAttribute('aria-expanded', String(!body.hidden));
+  }));
+}
+let clearArmed = false;
+$('histBack').addEventListener('click',()=>go(state.back||'intro'));
+$('histClear').addEventListener('click',()=>{
+  if(!clearArmed){ clearArmed = true; $('histClear').textContent = 'Toquen otra vez para borrar todo'; return; }
+  hist = [];
+  store.set(KEY_H, hist);
+  renderHist();
+});
+
+/* ── Arranque ────────────────────────────────── */
+const RENDER = {
+  intro:renderIntro, encargo:renderEncargo, anillo:renderRing, direccion:renderRing,
+  mensaje:renderMensaje, resultado:renderResultado, futuro:renderFuturo,
+  lecturas:renderLecturas, cierre:renderCierre, historial:renderHist
+};
+render();
 
 })();
 </script>
